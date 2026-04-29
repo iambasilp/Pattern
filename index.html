@@ -1,1296 +1,1576 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Loop Tracker">
-<meta name="theme-color" content="#0a0a0a">
-<title>Behavior Loop Tracker</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  /* Surfaces */
-  --bg: #000000;
-  --surface: #0a0a0a;
-  --surface-2: #111111;
-  --surface-3: #161616;
-  --surface-elev: #1c1c1c;
-
-  /* Borders */
-  --border: #1c1c1c;
-  --border-2: #2a2a2a;
-  --border-strong: #383838;
-
-  /* Text */
-  --text: #ffffff;
-  --text-2: #b3b3b3;
-  --muted: #707070;
-  --dim: #404040;
-
-  /* Accent — teal, like loop habit tracker */
-  --accent: #14b8a6;
-  --accent-2: #0d9488;
-  --accent-soft: #042f2e;
-  --accent-glow: rgba(20, 184, 166, 0.12);
-
-  /* Status */
-  --good: #22c55e;
-  --warn: #f59e0b;
-  --danger: #ef4444;
-
-  /* Radii — boxy, professional */
-  --r: 0px;
-  --r-sm: 0px;
-
-  /* Spacing scale */
-  --gap-1: 4px;
-  --gap-2: 8px;
-  --gap-3: 12px;
-  --gap-4: 16px;
-  --gap-5: 20px;
-  --gap-6: 24px;
-  --gap-7: 32px;
-}
-
-html, body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.005em;
-}
-
-.mono, .num, code, pre {
-  font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-}
-
-body {
-  padding: 0;
-  max-width: 720px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background: var(--bg);
-  position: relative;
-}
-
-/* --------- HEADER --------- */
-header {
-  border-bottom: 1px solid var(--border);
-  padding: 22px 20px 16px;
-  background: var(--bg);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-h1 {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-h1::before {
-  content: '';
-  width: 10px;
-  height: 10px;
-  background: var(--accent);
-  display: inline-block;
-}
-
-.tagline {
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 0.2px;
-  margin-top: 6px;
-  font-weight: 400;
-}
-
-/* --------- NAV --------- */
-nav {
-  display: flex;
-  gap: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 64px;
-  z-index: 40;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-nav::-webkit-scrollbar { display: none; }
-
-nav button {
-  background: none;
-  border: none;
-  color: var(--muted);
-  padding: 14px 16px;
-  font-size: 11px;
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  white-space: nowrap;
-  transition: color 0.12s;
-}
-
-nav button.active {
-  color: var(--text);
-  border-bottom-color: var(--accent);
-}
-
-nav button:hover:not(.active) { color: var(--text-2); }
-
-/* --------- TABS / LAYOUT --------- */
-.tab { display: none; padding: 20px 16px 80px; }
-.tab.active { display: block; }
-
-/* --------- LABELS --------- */
-label {
-  display: block;
-  font-size: 10px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-  margin-top: 18px;
-  font-weight: 600;
-}
-
-label:first-child, .field:first-child label { margin-top: 0; }
-
-/* --------- INPUTS --------- */
-input[type=text], textarea, select {
-  width: 100%;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 13px 14px;
-  font-size: 14px;
-  font-family: inherit;
-  border-radius: var(--r);
-  outline: none;
-  transition: border-color 0.12s, background 0.12s;
-}
-
-input[type=text]:focus, textarea:focus, select:focus {
-  border-color: var(--accent);
-  background: var(--surface-3);
-}
-
-input[type=text]::placeholder, textarea::placeholder {
-  color: var(--dim);
-}
-
-textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
-
-/* --------- RANGE SLIDER --------- */
-.range-wrap {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  padding: 14px 16px;
-  border-radius: var(--r);
-}
-
-input[type=range] {
-  flex: 1;
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  height: 24px;
-  cursor: pointer;
-}
-
-input[type=range]::-webkit-slider-runnable-track {
-  height: 2px;
-  background: var(--border-strong);
-}
-
-input[type=range]::-moz-range-track {
-  height: 2px;
-  background: var(--border-strong);
-}
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 18px;
-  width: 4px;
-  background: var(--accent);
-  border-radius: 0;
-  margin-top: -8px;
-  cursor: pointer;
-}
-
-input[type=range]::-moz-range-thumb {
-  height: 18px;
-  width: 4px;
-  background: var(--accent);
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
-}
-
-.range-val {
-  min-width: 40px;
-  text-align: right;
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-variant-numeric: tabular-nums;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 0;
-}
-
-/* --------- CHOICE BUTTONS --------- */
-.choice-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.choice-row button {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text-2);
-  padding: 11px 14px;
-  font-size: 12px;
-  font-family: inherit;
-  font-weight: 500;
-  border-radius: var(--r);
-  cursor: pointer;
-  flex: 1;
-  min-width: fit-content;
-  letter-spacing: 0.1px;
-  transition: all 0.12s;
-}
-
-.choice-row button:hover {
-  border-color: var(--border-strong);
-  color: var(--text);
-  background: var(--surface-3);
-}
-
-.choice-row button.selected {
-  background: var(--accent);
-  color: #000000;
-  border-color: var(--accent);
-  font-weight: 600;
-}
-
-/* --------- SECTIONS --------- */
-.section-title {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 28px;
-  margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 600;
-}
-
-.section-title:first-of-type { margin-top: 0; }
-
-.field { margin-bottom: 4px; }
-
-/* --------- TOGGLE EXPAND --------- */
-.toggle-expand {
-  background: transparent;
-  border: 1px solid var(--border-2);
-  color: var(--text-2);
-  padding: 13px;
-  width: 100%;
-  margin-top: 24px;
-  cursor: pointer;
-  font-size: 11px;
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  border-radius: var(--r);
-  transition: all 0.12s;
-}
-
-.toggle-expand:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.expanded-section { margin-top: 24px; }
-.expanded-section.hidden { display: none; }
-
-/* --------- SAVE BUTTON --------- */
-.save-btn {
-  width: 100%;
-  background: var(--accent);
-  color: #000000;
-  border: none;
-  padding: 16px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-top: 32px;
-  cursor: pointer;
-  font-family: inherit;
-  border-radius: var(--r);
-  transition: background 0.12s;
-}
-
-.save-btn:disabled {
-  background: var(--surface-3);
-  color: var(--dim);
-  cursor: not-allowed;
-}
-
-.save-btn:not(:disabled):hover { background: var(--accent-2); }
-
-/* --------- ENTRIES --------- */
-.entry {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--border-2);
-  padding: 16px;
-  margin-bottom: 6px;
-  border-radius: var(--r);
-  cursor: pointer;
-  transition: border-color 0.12s, background 0.12s;
-}
-
-.entry:hover {
-  border-color: var(--border-2);
-  border-left-color: var(--accent);
-  background: var(--surface-2);
-}
-
-.entry-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.entry-time {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  font-family: ui-monospace, "SF Mono", monospace;
-  text-transform: uppercase;
-}
-
-.entry-stim {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
-  flex: 1;
-  word-break: break-word;
-  letter-spacing: -0.01em;
-}
-
-.entry-meta {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 10px;
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-variant-numeric: tabular-nums;
-}
-
-.entry-meta span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  text-transform: lowercase;
-  letter-spacing: 0.3px;
-}
-
-.entry-detail {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  display: none;
-  font-size: 12px;
-}
-
-.entry-detail.open { display: block; }
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 4px 16px;
-  margin-bottom: 16px;
-}
-
-.detail-grid dt {
-  color: var(--muted);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  padding: 4px 0;
-  font-weight: 600;
-}
-
-.detail-grid dd {
-  color: var(--text);
-  font-size: 13px;
-  margin: 0;
-  padding: 4px 0;
-  word-break: break-word;
-}
-
-.delete-btn {
-  background: transparent;
-  border: 1px solid var(--border-2);
-  color: var(--muted);
-  padding: 9px 14px;
-  font-size: 10px;
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  border-radius: var(--r);
-  cursor: pointer;
-  margin-top: 12px;
-  transition: all 0.12s;
-}
-
-.delete-btn:hover {
-  color: var(--danger);
-  border-color: var(--danger);
-}
-
-/* --------- REFLECTION BLOCK --------- */
-.reflection-block {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--accent);
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  border-radius: var(--r);
-}
-
-.reflection-label {
-  font-size: 9px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 8px;
-  font-weight: 700;
-}
-
-.reflection-text {
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.6;
-  cursor: pointer;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-
-.reflection-text.empty {
-  color: var(--dim);
-  font-style: normal;
-  font-size: 12px;
-}
-
-.reflection-textarea {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border-2);
-  color: var(--text);
-  padding: 10px 12px;
-  font-size: 13px;
-  font-family: inherit;
-  border-radius: var(--r);
-  outline: none;
-  resize: vertical;
-  min-height: 60px;
-  line-height: 1.5;
-}
-
-.reflection-textarea:focus { border-color: var(--accent); }
-
-.reflection-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.reflection-actions button {
-  background: var(--surface);
-  border: 1px solid var(--border-2);
-  color: var(--text-2);
-  padding: 8px 12px;
-  font-size: 10px;
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  border-radius: var(--r);
-  cursor: pointer;
-  transition: all 0.12s;
-}
-
-.reflection-actions button:hover { color: var(--text); border-color: var(--border-strong); }
-
-.reflection-actions button.primary {
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
-}
-
-.reflection-actions button.primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
-
-.loop-reflection {
-  margin-top: 12px;
-  padding: 10px 12px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--accent);
-  border-radius: var(--r);
-  font-size: 12px;
-  color: var(--text-2);
-  line-height: 1.55;
-}
-
-.loop-reflection .ref-label {
-  color: var(--accent);
-  font-size: 9px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 700;
-}
-
-/* --------- STATS --------- */
-.stat {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 16px 18px;
-  margin-bottom: 6px;
-  border-radius: var(--r);
-}
-
-.stat-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
-  color: var(--muted);
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.stat-val {
-  font-size: 17px;
-  color: var(--text);
-  word-break: break-word;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-.stat-val.big {
-  font-size: 32px;
-  font-weight: 300;
-  letter-spacing: -1px;
-  color: var(--text);
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-variant-numeric: tabular-nums;
-}
-
-/* --------- DISTRIBUTIONS --------- */
-.dist-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 9px 0;
-  font-size: 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.dist-row:last-of-type { border-bottom: none; }
-
-.dist-row .lbl {
-  color: var(--text-2);
-  text-transform: capitalize;
-  font-weight: 500;
-}
-
-.dist-row .num {
-  color: var(--muted);
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-variant-numeric: tabular-nums;
-  font-size: 11px;
-  letter-spacing: 0.3px;
-}
-
-.bar-track {
-  height: 3px;
-  background: var(--border);
-  margin-top: 6px;
-  margin-bottom: 4px;
-  position: relative;
-  overflow: hidden;
-}
-
-.bar-fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background: var(--accent);
-  transition: width 0.3s ease;
-}
-
-/* --------- LOOP CARDS --------- */
-.loop-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  padding: 16px 18px;
-  margin-bottom: 6px;
-  border-radius: var(--r);
-}
-
-.loop-flow {
-  font-size: 14px;
-  color: var(--text);
-  line-height: 1.7;
-  word-break: break-word;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-.loop-flow .arrow {
-  color: var(--accent);
-  margin: 0 8px;
-  font-weight: 700;
-}
-
-.loop-meta {
-  display: flex;
-  gap: 16px;
-  margin-top: 12px;
-  font-size: 10px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  flex-wrap: wrap;
-  font-weight: 600;
-}
-
-.loop-meta span { display: flex; align-items: center; gap: 5px; }
-
-.loop-meta strong {
-  color: var(--accent);
-  font-weight: 700;
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-}
-
-/* --------- EMPTY STATE --------- */
-.empty {
-  color: var(--muted);
-  text-align: center;
-  padding: 56px 24px;
-  font-size: 13px;
-  letter-spacing: 0.2px;
-  border: 1px dashed var(--border);
-  border-radius: var(--r);
-  background: var(--surface);
-  line-height: 1.6;
-}
-
-/* --------- TOAST --------- */
-.toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--accent);
-  color: #000;
-  padding: 12px 20px;
-  font-size: 11px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  font-weight: 700;
-  border-radius: var(--r);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s, transform 0.18s;
-  z-index: 100;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* --------- TOOLBAR --------- */
-.toolbar {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 20px;
-}
-
-.toolbar button {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text-2);
-  padding: 11px;
-  font-size: 10px;
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: 1.3px;
-  text-transform: uppercase;
-  border-radius: var(--r);
-  cursor: pointer;
-  transition: all 0.12s;
-}
-
-.toolbar button:hover {
-  color: var(--text);
-  border-color: var(--border-strong);
-  background: var(--surface-2);
-}
-
-.entries-count {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-  font-weight: 600;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-/* --------- ANALYTICS --------- */
-.section-summary {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--accent);
-  padding: 14px 16px;
-  margin-bottom: 22px;
-  border-radius: var(--r);
-  font-size: 12px;
-  color: var(--text-2);
-  line-height: 1.65;
-}
-
-.section-summary .num {
-  color: var(--accent);
-  font-size: 16px;
-  font-weight: 700;
-  margin-right: 6px;
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-}
-
-.section-heading {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text);
-  margin-top: 28px;
-  margin-bottom: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.section-heading::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  display: inline-block;
-}
-
-.section-heading:first-of-type { margin-top: 0; }
-
-.note {
-  font-size: 11px;
-  color: var(--dim);
-  letter-spacing: 0.2px;
-  margin-top: 6px;
-  font-style: normal;
-  line-height: 1.5;
-}
-
-/* --------- SETTINGS --------- */
-.settings-section { margin-bottom: 32px; }
-
-.settings-title {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text);
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.settings-title::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  display: inline-block;
-}
-
-.status-line {
-  font-size: 12px;
-  color: var(--text-2);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding: 12px 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 0 0 3px var(--surface);
-}
-
-.status-dot.on {
-  background: var(--good);
-  box-shadow: 0 0 0 3px var(--surface), 0 0 12px rgba(34, 197, 94, 0.5);
-}
-
-.status-dot.off { background: var(--dim); }
-
-.code-block {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  padding: 14px 16px;
-  font-size: 11px;
-  color: var(--text-2);
-  border-radius: var(--r);
-  white-space: pre;
-  overflow-x: auto;
-  line-height: 1.6;
-  margin-top: 12px;
-  font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
-}
-
-.copy-btn {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text-2);
-  padding: 11px 16px;
-  font-size: 10px;
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  border-radius: var(--r);
-  cursor: pointer;
-  margin-top: 10px;
-  transition: all 0.12s;
-}
-
-.copy-btn:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.copy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.url-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 14px;
-  flex-wrap: wrap;
-}
-
-.url-actions button { flex: 1; min-width: 90px; }
-
-.steps {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-}
-
-.steps li {
-  font-size: 13px;
-  color: var(--text-2);
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  line-height: 1.55;
-}
-
-.steps li:last-child { border-bottom: none; }
-
-.step-num {
-  color: var(--accent);
-  font-size: 9px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  min-width: 56px;
-  padding-top: 3px;
-  flex-shrink: 0;
-  font-weight: 700;
-  font-family: ui-monospace, "SF Mono", monospace;
-}
-
-.hosting-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--accent);
-  padding: 16px 18px;
-  border-radius: var(--r);
-  margin-bottom: 6px;
-}
-
-.hosting-name {
-  font-size: 13px;
-  color: var(--text);
-  font-weight: 600;
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
-}
-
-.hosting-steps {
-  font-size: 12px;
-  color: var(--text-2);
-  line-height: 1.7;
-}
-
-/* --------- RESPONSIVE --------- */
-@media (max-width: 380px) {
-  .detail-grid { grid-template-columns: 1fr; gap: 0; }
-  .detail-grid dt { margin-top: 8px; }
-  body { font-size: 13px; }
-  .tab { padding: 16px 14px 80px; }
-  header { padding: 18px 14px 14px; }
-  nav button { padding: 12px 12px; font-size: 10px; }
-  .url-actions button { min-width: 100%; }
-}
-
-@media (min-width: 720px) {
-  body {
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-  }
-}
-
-/* --------- SCROLLBAR --------- */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border-2); }
-::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
-
-/* --------- SELECTION --------- */
-::selection {
-  background: var(--accent);
-  color: #000;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Loop Tracker">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Behavior Loop Tracker</title>
+  <script>
+    /* Theme bootstrap — runs synchronously before paint to prevent FOUC */
+    (function () {
+      try {
+        var saved = localStorage.getItem('blt_theme');
+        var theme = (saved === 'light' || saved === 'dark')
+          ? saved
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        var mc = document.querySelector('meta[name="theme-color"]');
+        if (mc) mc.setAttribute('content', theme === 'light' ? '#ffffff' : '#0a0a0a');
+      } catch (e) { }
+    })();
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Surfaces */
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --surface-2: #111111;
+      --surface-3: #161616;
+      --surface-elev: #1c1c1c;
+
+      /* Borders */
+      --border: #1c1c1c;
+      --border-2: #2a2a2a;
+      --border-strong: #383838;
+
+      /* Text */
+      --text: #ffffff;
+      --text-2: #b3b3b3;
+      --muted: #707070;
+      --dim: #404040;
+
+      /* Accent — teal, like loop habit tracker */
+      --accent: #14b8a6;
+      --accent-2: #0d9488;
+      --accent-soft: #042f2e;
+      --accent-glow: rgba(20, 184, 166, 0.12);
+
+      /* Status */
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+
+      /* Radii — boxy, professional */
+      --r: 0px;
+      --r-sm: 0px;
+
+      /* Spacing scale */
+      --gap-1: 4px;
+      --gap-2: 8px;
+      --gap-3: 12px;
+      --gap-4: 16px;
+      --gap-5: 20px;
+      --gap-6: 24px;
+      --gap-7: 32px;
+    }
+
+    html,
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: -0.005em;
+    }
+
+    .mono,
+    .num,
+    code,
+    pre {
+      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+    }
+
+    body {
+      padding: 0;
+      max-width: 720px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg);
+      position: relative;
+    }
+
+    /* --------- HEADER --------- */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 22px 20px 16px;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    h1 {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h1::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.2px;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    /* --------- NAV --------- */
+    nav {
+      display: flex;
+      gap: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 64px;
+      z-index: 40;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 14px 16px;
+      font-size: 11px;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      transition: color 0.12s;
+    }
+
+    nav button.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+
+    nav button:hover:not(.active) {
+      color: var(--text-2);
+    }
+
+    /* --------- TABS / LAYOUT --------- */
+    .tab {
+      display: none;
+      padding: 20px 16px 80px;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    /* --------- LABELS --------- */
+    label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      margin-top: 18px;
+      font-weight: 600;
+    }
+
+    label:first-child,
+    .field:first-child label {
+      margin-top: 0;
+    }
+
+    /* --------- INPUTS --------- */
+    input[type=text],
+    textarea,
+    select {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 13px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border-radius: var(--r);
+      outline: none;
+      transition: border-color 0.12s, background 0.12s;
+    }
+
+    input[type=text]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      background: var(--surface-3);
+    }
+
+    input[type=text]::placeholder,
+    textarea::placeholder {
+      color: var(--dim);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.5;
+    }
+
+    /* --------- RANGE SLIDER --------- */
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: var(--r);
+    }
+
+    input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 2px;
+      background: var(--border-strong);
+    }
+
+    input[type=range]::-moz-range-track {
+      height: 2px;
+      background: var(--border-strong);
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 4px;
+      background: var(--accent);
+      border-radius: 0;
+      margin-top: -8px;
+      cursor: pointer;
+    }
+
+    input[type=range]::-moz-range-thumb {
+      height: 18px;
+      width: 4px;
+      background: var(--accent);
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    .range-val {
+      min-width: 40px;
+      text-align: right;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0;
+    }
+
+    /* --------- CHOICE BUTTONS --------- */
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .choice-row button {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      padding: 11px 14px;
+      font-size: 12px;
+      font-family: inherit;
+      font-weight: 500;
+      border-radius: var(--r);
+      cursor: pointer;
+      flex: 1;
+      min-width: fit-content;
+      letter-spacing: 0.1px;
+      transition: all 0.12s;
+    }
+
+    .choice-row button:hover {
+      border-color: var(--border-strong);
+      color: var(--text);
+      background: var(--surface-3);
+    }
+
+    .choice-row button.selected {
+      background: var(--accent);
+      color: #000000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* --------- SECTIONS --------- */
+    .section-title {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 28px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .section-title:first-of-type {
+      margin-top: 0;
+    }
+
+    .field {
+      margin-bottom: 4px;
+    }
+
+    /* --------- TOGGLE EXPAND --------- */
+    .toggle-expand {
+      background: transparent;
+      border: 1px solid var(--border-2);
+      color: var(--text-2);
+      padding: 13px;
+      width: 100%;
+      margin-top: 24px;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      border-radius: var(--r);
+      transition: all 0.12s;
+    }
+
+    .toggle-expand:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .expanded-section {
+      margin-top: 24px;
+    }
+
+    .expanded-section.hidden {
+      display: none;
+    }
+
+    /* --------- SAVE BUTTON --------- */
+    .save-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #000000;
+      border: none;
+      padding: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 32px;
+      cursor: pointer;
+      font-family: inherit;
+      border-radius: var(--r);
+      transition: background 0.12s;
+    }
+
+    .save-btn:disabled {
+      background: var(--surface-3);
+      color: var(--dim);
+      cursor: not-allowed;
+    }
+
+    .save-btn:not(:disabled):hover {
+      background: var(--accent-2);
+    }
+
+    /* --------- ENTRIES --------- */
+    .entry {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--border-2);
+      padding: 16px;
+      margin-bottom: 6px;
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+    }
+
+    .entry:hover {
+      border-color: var(--border-2);
+      border-left-color: var(--accent);
+      background: var(--surface-2);
+    }
+
+    .entry-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .entry-time {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      font-family: ui-monospace, "SF Mono", monospace;
+      text-transform: uppercase;
+    }
+
+    .entry-stim {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+      word-break: break-word;
+      letter-spacing: -0.01em;
+    }
+
+    .entry-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 10px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .entry-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-transform: lowercase;
+      letter-spacing: 0.3px;
+    }
+
+    .entry-detail {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: none;
+      font-size: 12px;
+    }
+
+    .entry-detail.open {
+      display: block;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4px 16px;
+      margin-bottom: 16px;
+    }
+
+    .detail-grid dt {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 4px 0;
+      font-weight: 600;
+    }
+
+    .detail-grid dd {
+      color: var(--text);
+      font-size: 13px;
+      margin: 0;
+      padding: 4px 0;
+      word-break: break-word;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: 1px solid var(--border-2);
+      color: var(--muted);
+      padding: 9px 14px;
+      font-size: 10px;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      border-radius: var(--r);
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.12s;
+    }
+
+    .delete-btn:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    /* --------- REFLECTION BLOCK --------- */
+    .reflection-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      border-radius: var(--r);
+    }
+
+    .reflection-label {
+      font-size: 9px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .reflection-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      cursor: pointer;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .reflection-text.empty {
+      color: var(--dim);
+      font-style: normal;
+      font-size: 12px;
+    }
+
+    .reflection-textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-2);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      border-radius: var(--r);
+      outline: none;
+      resize: vertical;
+      min-height: 60px;
+      line-height: 1.5;
+    }
+
+    .reflection-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .reflection-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .reflection-actions button {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      color: var(--text-2);
+      padding: 8px 12px;
+      font-size: 10px;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .reflection-actions button:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .reflection-actions button.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .reflection-actions button.primary:hover {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+    }
+
+    .loop-reflection {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      border-radius: var(--r);
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.55;
+    }
+
+    .loop-reflection .ref-label {
+      color: var(--accent);
+      font-size: 9px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    /* --------- STATS --------- */
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      margin-bottom: 6px;
+      border-radius: var(--r);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .stat-val {
+      font-size: 17px;
+      color: var(--text);
+      word-break: break-word;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .stat-val.big {
+      font-size: 32px;
+      font-weight: 300;
+      letter-spacing: -1px;
+      color: var(--text);
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* --------- DISTRIBUTIONS --------- */
+    .dist-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      font-size: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dist-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .dist-row .lbl {
+      color: var(--text-2);
+      text-transform: capitalize;
+      font-weight: 500;
+    }
+
+    .dist-row .num {
+      color: var(--muted);
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 11px;
+      letter-spacing: 0.3px;
+    }
+
+    .bar-track {
+      height: 3px;
+      background: var(--border);
+      margin-top: 6px;
+      margin-bottom: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    /* --------- LOOP CARDS --------- */
+    .loop-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 16px 18px;
+      margin-bottom: 6px;
+      border-radius: var(--r);
+    }
+
+    .loop-flow {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.7;
+      word-break: break-word;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .loop-flow .arrow {
+      color: var(--accent);
+      margin: 0 8px;
+      font-weight: 700;
+    }
+
+    .loop-meta {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-wrap: wrap;
+      font-weight: 600;
+    }
+
+    .loop-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .loop-meta strong {
+      color: var(--accent);
+      font-weight: 700;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+    }
+
+    /* --------- EMPTY STATE --------- */
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 56px 24px;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+      border: 1px dashed var(--border);
+      border-radius: var(--r);
+      background: var(--surface);
+      line-height: 1.6;
+    }
+
+    /* --------- TOAST --------- */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--accent);
+      color: #000;
+      padding: 12px 20px;
+      font-size: 11px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border-radius: var(--r);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s, transform 0.18s;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* --------- TOOLBAR --------- */
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .toolbar button {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      padding: 11px;
+      font-size: 10px;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .toolbar button:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+      background: var(--surface-2);
+    }
+
+    .entries-count {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      font-weight: 600;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* --------- ANALYTICS --------- */
+    .section-summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      border-radius: var(--r);
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.65;
+    }
+
+    .section-summary .num {
+      color: var(--accent);
+      font-size: 16px;
+      font-weight: 700;
+      margin-right: 6px;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+    }
+
+    .section-heading {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-top: 28px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-heading::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .section-heading:first-of-type {
+      margin-top: 0;
+    }
+
+    .note {
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.2px;
+      margin-top: 6px;
+      font-style: normal;
+      line-height: 1.5;
+    }
+
+    /* --------- SETTINGS --------- */
+    .settings-section {
+      margin-bottom: 32px;
+    }
+
+    .settings-title {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-title::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .status-line {
+      font-size: 12px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px var(--surface);
+    }
+
+    .status-dot.on {
+      background: var(--good);
+      box-shadow: 0 0 0 3px var(--surface), 0 0 12px rgba(34, 197, 94, 0.5);
+    }
+
+    .status-dot.off {
+      background: var(--dim);
+    }
+
+    .code-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      font-size: 11px;
+      color: var(--text-2);
+      border-radius: var(--r);
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.6;
+      margin-top: 12px;
+      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    }
+
+    .copy-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      padding: 11px 16px;
+      font-size: 10px;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      border-radius: var(--r);
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.12s;
+    }
+
+    .copy-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .copy-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .url-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .url-actions button {
+      flex: 1;
+      min-width: 90px;
+    }
+
+    .steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+    }
+
+    .steps li {
+      font-size: 13px;
+      color: var(--text-2);
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      line-height: 1.55;
+    }
+
+    .steps li:last-child {
+      border-bottom: none;
+    }
+
+    .step-num {
+      color: var(--accent);
+      font-size: 9px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      min-width: 56px;
+      padding-top: 3px;
+      flex-shrink: 0;
+      font-weight: 700;
+      font-family: ui-monospace, "SF Mono", monospace;
+    }
+
+    .hosting-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      padding: 16px 18px;
+      border-radius: var(--r);
+      margin-bottom: 6px;
+    }
+
+    .hosting-name {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .hosting-steps {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
+
+    /* --------- RESPONSIVE --------- */
+    @media (max-width: 380px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .detail-grid dt {
+        margin-top: 8px;
+      }
+
+      body {
+        font-size: 13px;
+      }
+
+      .tab {
+        padding: 16px 14px 80px;
+      }
+
+      header {
+        padding: 18px 14px 14px;
+      }
+
+      nav button {
+        padding: 12px 12px;
+        font-size: 10px;
+      }
+
+      .url-actions button {
+        min-width: 100%;
+      }
+    }
+
+    @media (min-width: 720px) {
+      body {
+        border-left: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+      }
+    }
+
+    /* --------- SCROLLBAR --------- */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-2);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-strong);
+    }
+
+    /* --------- SELECTION --------- */
+    ::selection {
+      background: var(--accent);
+      color: #000;
+    }
+
+    /* --------- LIGHT THEME --------- */
+    [data-theme="light"] {
+      /* Surfaces — soft warm whites */
+      --bg: #ffffff;
+      --surface: #fafafa;
+      --surface-2: #f5f5f5;
+      --surface-3: #ededed;
+      --surface-elev: #ffffff;
+
+      /* Borders */
+      --border: #e7e7e7;
+      --border-2: #d4d4d4;
+      --border-strong: #a3a3a3;
+
+      /* Text */
+      --text: #0a0a0a;
+      --text-2: #404040;
+      --muted: #737373;
+      --dim: #b5b5b5;
+
+      /* Accent — slightly darker teal for AAA contrast on white */
+      --accent: #0d9488;
+      --accent-2: #0f766e;
+      --accent-soft: #ccfbf1;
+      --accent-glow: rgba(13, 148, 136, 0.10);
+
+      /* Status */
+      --good: #15803d;
+      --warn: #b45309;
+      --danger: #b91c1c;
+    }
+
+    /* Light-mode-specific micro-adjustments */
+    [data-theme="light"] body {
+      background: var(--bg);
+    }
+
+    [data-theme="light"] .toast {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 1px 0 rgba(0, 0, 0, 0.04);
+    }
+
+    [data-theme="light"] .status-dot.on {
+      box-shadow: 0 0 0 3px var(--surface), 0 0 10px rgba(21, 128, 61, 0.35);
+    }
+
+    [data-theme="light"] input[type=range]::-webkit-slider-runnable-track {
+      background: var(--border-2);
+    }
+
+    [data-theme="light"] input[type=range]::-moz-range-track {
+      background: var(--border-2);
+    }
+
+    [data-theme="light"] .save-btn,
+    [data-theme="light"] .choice-row button.selected,
+    [data-theme="light"] .reflection-actions button.primary,
+    [data-theme="light"] .toast,
+    [data-theme="light"] ::selection {
+      color: #ffffff;
+    }
+
+    [data-theme="light"] .save-btn:disabled {
+      background: var(--surface-3);
+      color: var(--dim);
+    }
+
+    /* --------- THEME TOGGLE --------- */
+    .theme-toggle {
+      position: absolute;
+      top: 22px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    .theme-toggle:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--surface-2);
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.96);
+    }
+
+    .theme-toggle svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .theme-toggle .sun {
+      display: block;
+    }
+
+    .theme-toggle .moon {
+      display: none;
+    }
+
+    [data-theme="light"] .theme-toggle .sun {
+      display: none;
+    }
+
+    [data-theme="light"] .theme-toggle .moon {
+      display: block;
+    }
+
+    @media (max-width: 380px) {
+      .theme-toggle {
+        top: 18px;
+        right: 14px;
+        width: 30px;
+        height: 30px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <h1>Behavior Loop Tracker</h1>
-  <div class="tagline">structured self-observation · no streaks · no shame</div>
-</header>
+  <header>
+    <h1>Behavior Loop Tracker</h1>
+    <div class="tagline">structured self-observation · no streaks · no shame</div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark theme" title="Toggle theme">
+      <svg class="sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" />
+        <line x1="12" y1="2" x2="12" y2="4" />
+        <line x1="12" y1="20" x2="12" y2="22" />
+        <line x1="2" y1="12" x2="4" y2="12" />
+        <line x1="20" y1="12" x2="22" y2="12" />
+        <line x1="4.93" y1="4.93" x2="6.34" y2="6.34" />
+        <line x1="17.66" y1="17.66" x2="19.07" y2="19.07" />
+        <line x1="4.93" y1="19.07" x2="6.34" y2="17.66" />
+        <line x1="17.66" y1="6.34" x2="19.07" y2="4.93" />
+      </svg>
+      <svg class="moon" viewBox="0 0 24 24">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    </button>
+  </header>
 
-<nav>
-  <button data-tab="track" class="active">Track</button>
-  <button data-tab="history">History</button>
-  <button data-tab="analytics">Analytics</button>
-  <button data-tab="settings">Settings</button>
-</nav>
+  <nav>
+    <button data-tab="track" class="active">Track</button>
+    <button data-tab="history">History</button>
+    <button data-tab="analytics">Analytics</button>
+    <button data-tab="settings">Settings</button>
+  </nav>
 
-<!-- ============ TRACK TAB ============ -->
-<section class="tab active" id="tab-track">
+  <!-- ============ TRACK TAB ============ -->
+  <section class="tab active" id="tab-track">
 
-  <label>Stimulus — what triggered this?</label>
-  <input type="text" id="f_stimulus_label" placeholder="e.g. boredom, opened fridge, manager pinged me" autocomplete="off">
+    <label>Stimulus — what triggered this?</label>
+    <input type="text" id="f_stimulus_label" placeholder="e.g. boredom, opened fridge, manager pinged me"
+      autocomplete="off">
 
-  <label>Thought — what did your mind say?</label>
-  <textarea id="f_thought" placeholder="e.g. just 2 mins, i deserve this, i'll start tomorrow"></textarea>
+    <label>Thought — what did your mind say?</label>
+    <textarea id="f_thought" placeholder="e.g. just 2 mins, i deserve this, i'll start tomorrow"></textarea>
 
-  <label>Urge intensity (1–10)</label>
-  <div class="range-wrap">
-    <input type="range" id="f_urge_intensity" min="1" max="10" value="5">
-    <span class="range-val" id="f_urge_intensity_val">5</span>
-  </div>
-
-  <label>Action</label>
-  <div class="choice-row" data-choice="action_type">
-    <button data-value="acted">Acted</button>
-    <button data-value="delayed">Delayed</button>
-    <button data-value="resisted">Resisted</button>
-    <button data-value="replaced">Replaced</button>
-  </div>
-
-  <label>Awareness — when did you notice?</label>
-  <div class="choice-row" data-choice="awareness">
-    <button data-value="before">Before</button>
-    <button data-value="during">During</button>
-    <button data-value="after">After</button>
-  </div>
-
-  <button class="toggle-expand" id="toggleExpand">+ Expand all fields</button>
-
-  <div class="expanded-section hidden" id="expandedSection">
-
-    <div class="section-title">Stimulus</div>
-    <label>Type</label>
-    <div class="choice-row" data-choice="stimulus_type">
-      <button data-value="internal">Internal</button>
-      <button data-value="external">External</button>
-    </div>
-    <label>Category</label>
-    <div class="choice-row" data-choice="stimulus_category">
-      <button data-value="physiological">Physiological</button>
-      <button data-value="emotional">Emotional</button>
-      <button data-value="environmental">Environmental</button>
-      <button data-value="social">Social</button>
-      <button data-value="temporal">Temporal</button>
-    </div>
-
-    <div class="section-title">Thought</div>
-    <label>Thought type</label>
-    <div class="choice-row" data-choice="thought_type">
-      <button data-value="impulse">Impulse</button>
-      <button data-value="justification">Justification</button>
-      <button data-value="avoidance">Avoidance</button>
-      <button data-value="emotional_reasoning">Emotional reasoning</button>
-    </div>
-
-    <div class="section-title">Urge</div>
-    <label>Urge type</label>
-    <div class="choice-row" data-choice="urge_type">
-      <button data-value="reward">Reward</button>
-      <button data-value="escape">Escape</button>
-      <button data-value="relief">Relief</button>
-    </div>
-    <label>Duration</label>
-    <div class="choice-row" data-choice="urge_duration">
-      <button data-value="short">Short</button>
-      <button data-value="medium">Medium</button>
-      <button data-value="long">Long</button>
-    </div>
-
-    <div class="section-title">Body</div>
-    <label>Hunger (1–10)</label>
+    <label>Urge intensity (1–10)</label>
     <div class="range-wrap">
-      <input type="range" id="f_hunger" min="1" max="10" value="5">
-      <span class="range-val" id="f_hunger_val">5</span>
-    </div>
-    <label>Energy</label>
-    <div class="choice-row" data-choice="energy">
-      <button data-value="low">Low</button>
-      <button data-value="normal">Normal</button>
-      <button data-value="high">High</button>
-    </div>
-    <label>Tension</label>
-    <div class="choice-row" data-choice="tension">
-      <button data-value="low">Low</button>
-      <button data-value="medium">Medium</button>
-      <button data-value="high">High</button>
-    </div>
-    <label>Fatigue</label>
-    <div class="choice-row" data-choice="fatigue">
-      <button data-value="true">Yes</button>
-      <button data-value="false">No</button>
+      <input type="range" id="f_urge_intensity" min="1" max="10" value="5">
+      <span class="range-val" id="f_urge_intensity_val">5</span>
     </div>
 
-    <div class="section-title">Emotion</div>
-    <label>Emotion (free text)</label>
-    <input type="text" id="f_emotion" placeholder="e.g. anxious, restless, lonely, frustrated" autocomplete="off">
-
-    <div class="section-title">Behavior</div>
-    <label>Behavior category</label>
-    <div class="choice-row" data-choice="behavior_category">
-      <button data-value="eating">Eating</button>
-      <button data-value="scrolling">Scrolling</button>
-      <button data-value="avoidance">Avoidance</button>
-      <button data-value="anger">Anger</button>
-      <button data-value="social">Social</button>
-      <button data-value="substance">Substance</button>
-    </div>
-    <label>Behavior detail</label>
-    <input type="text" id="f_behavior_detail" placeholder="e.g. instagram reels for 35 mins, ate 2 packets of biscuits" autocomplete="off">
-    <label>Intensity</label>
-    <div class="choice-row" data-choice="behavior_intensity">
-      <button data-value="low">Low</button>
-      <button data-value="medium">Medium</button>
-      <button data-value="high">High</button>
-      <button data-value="extreme">Extreme</button>
+    <label>Action</label>
+    <div class="choice-row" data-choice="action_type">
+      <button data-value="acted">Acted</button>
+      <button data-value="delayed">Delayed</button>
+      <button data-value="resisted">Resisted</button>
+      <button data-value="replaced">Replaced</button>
     </div>
 
-    <div class="section-title">Response</div>
-    <label>Delay before acting</label>
-    <div class="choice-row" data-choice="delay">
-      <button data-value="0s">0s</button>
-      <button data-value="5s">5s</button>
-      <button data-value="30s">30s</button>
-      <button data-value="2m+">2m+</button>
-    </div>
-    <label>Effort to resist</label>
-    <div class="choice-row" data-choice="effort">
-      <button data-value="none">None</button>
-      <button data-value="low">Low</button>
-      <button data-value="high">High</button>
+    <label>Awareness — when did you notice?</label>
+    <div class="choice-row" data-choice="awareness">
+      <button data-value="before">Before</button>
+      <button data-value="during">During</button>
+      <button data-value="after">After</button>
     </div>
 
-    <div class="section-title">Outcome</div>
-    <label>Immediate outcome</label>
-    <div class="choice-row" data-choice="outcome_immediate">
-      <button data-value="pleasure">Pleasure</button>
-      <button data-value="relief">Relief</button>
-      <button data-value="neutral">Neutral</button>
-      <button data-value="discomfort">Discomfort</button>
+    <button class="toggle-expand" id="toggleExpand">+ Expand all fields</button>
+
+    <div class="expanded-section hidden" id="expandedSection">
+
+      <div class="section-title">Stimulus</div>
+      <label>Type</label>
+      <div class="choice-row" data-choice="stimulus_type">
+        <button data-value="internal">Internal</button>
+        <button data-value="external">External</button>
+      </div>
+      <label>Category</label>
+      <div class="choice-row" data-choice="stimulus_category">
+        <button data-value="physiological">Physiological</button>
+        <button data-value="emotional">Emotional</button>
+        <button data-value="environmental">Environmental</button>
+        <button data-value="social">Social</button>
+        <button data-value="temporal">Temporal</button>
+      </div>
+
+      <div class="section-title">Thought</div>
+      <label>Thought type</label>
+      <div class="choice-row" data-choice="thought_type">
+        <button data-value="impulse">Impulse</button>
+        <button data-value="justification">Justification</button>
+        <button data-value="avoidance">Avoidance</button>
+        <button data-value="emotional_reasoning">Emotional reasoning</button>
+      </div>
+
+      <div class="section-title">Urge</div>
+      <label>Urge type</label>
+      <div class="choice-row" data-choice="urge_type">
+        <button data-value="reward">Reward</button>
+        <button data-value="escape">Escape</button>
+        <button data-value="relief">Relief</button>
+      </div>
+      <label>Duration</label>
+      <div class="choice-row" data-choice="urge_duration">
+        <button data-value="short">Short</button>
+        <button data-value="medium">Medium</button>
+        <button data-value="long">Long</button>
+      </div>
+
+      <div class="section-title">Body</div>
+      <label>Hunger (1–10)</label>
+      <div class="range-wrap">
+        <input type="range" id="f_hunger" min="1" max="10" value="5">
+        <span class="range-val" id="f_hunger_val">5</span>
+      </div>
+      <label>Energy</label>
+      <div class="choice-row" data-choice="energy">
+        <button data-value="low">Low</button>
+        <button data-value="normal">Normal</button>
+        <button data-value="high">High</button>
+      </div>
+      <label>Tension</label>
+      <div class="choice-row" data-choice="tension">
+        <button data-value="low">Low</button>
+        <button data-value="medium">Medium</button>
+        <button data-value="high">High</button>
+      </div>
+      <label>Fatigue</label>
+      <div class="choice-row" data-choice="fatigue">
+        <button data-value="true">Yes</button>
+        <button data-value="false">No</button>
+      </div>
+
+      <div class="section-title">Emotion</div>
+      <label>Emotion (free text)</label>
+      <input type="text" id="f_emotion" placeholder="e.g. anxious, restless, lonely, frustrated" autocomplete="off">
+
+      <div class="section-title">Behavior</div>
+      <label>Behavior category</label>
+      <div class="choice-row" data-choice="behavior_category">
+        <button data-value="eating">Eating</button>
+        <button data-value="scrolling">Scrolling</button>
+        <button data-value="avoidance">Avoidance</button>
+        <button data-value="anger">Anger</button>
+        <button data-value="social">Social</button>
+        <button data-value="substance">Substance</button>
+      </div>
+      <label>Behavior detail</label>
+      <input type="text" id="f_behavior_detail"
+        placeholder="e.g. instagram reels for 35 mins, ate 2 packets of biscuits" autocomplete="off">
+      <label>Intensity</label>
+      <div class="choice-row" data-choice="behavior_intensity">
+        <button data-value="low">Low</button>
+        <button data-value="medium">Medium</button>
+        <button data-value="high">High</button>
+        <button data-value="extreme">Extreme</button>
+      </div>
+
+      <div class="section-title">Response</div>
+      <label>Delay before acting</label>
+      <div class="choice-row" data-choice="delay">
+        <button data-value="0s">0s</button>
+        <button data-value="5s">5s</button>
+        <button data-value="30s">30s</button>
+        <button data-value="2m+">2m+</button>
+      </div>
+      <label>Effort to resist</label>
+      <div class="choice-row" data-choice="effort">
+        <button data-value="none">None</button>
+        <button data-value="low">Low</button>
+        <button data-value="high">High</button>
+      </div>
+
+      <div class="section-title">Outcome</div>
+      <label>Immediate outcome</label>
+      <div class="choice-row" data-choice="outcome_immediate">
+        <button data-value="pleasure">Pleasure</button>
+        <button data-value="relief">Relief</button>
+        <button data-value="neutral">Neutral</button>
+        <button data-value="discomfort">Discomfort</button>
+      </div>
+      <label>Post outcome (after a few minutes)</label>
+      <div class="choice-row" data-choice="outcome_post">
+        <button data-value="satisfaction">Satisfaction</button>
+        <button data-value="regret">Regret</button>
+        <button data-value="continued_craving">Continued craving</button>
+        <button data-value="none">None</button>
+      </div>
+
+      <div class="section-title">Context</div>
+      <div class="note">Time of day is captured automatically.</div>
+      <label>Location</label>
+      <div class="choice-row" data-choice="location">
+        <button data-value="home">Home</button>
+        <button data-value="work">Work</button>
+        <button data-value="outside">Outside</button>
+      </div>
+      <label>Social</label>
+      <div class="choice-row" data-choice="social">
+        <button data-value="alone">Alone</button>
+        <button data-value="with_others">With others</button>
+      </div>
+      <label>Device involved</label>
+      <div class="choice-row" data-choice="device">
+        <button data-value="phone">Phone</button>
+        <button data-value="none">None</button>
+      </div>
+
+      <div class="section-title">Pattern</div>
+      <label>Repeated this today already?</label>
+      <div class="choice-row" data-choice="repeat_today">
+        <button data-value="true">Yes</button>
+        <button data-value="false">No</button>
+      </div>
+      <label>How often does this loop run?</label>
+      <div class="choice-row" data-choice="frequency">
+        <button data-value="rare">Rare</button>
+        <button data-value="occasional">Occasional</button>
+        <button data-value="frequent">Frequent</button>
+      </div>
+
+      <div class="section-title">Reflection</div>
+      <label>What could you do differently next time?</label>
+      <textarea id="f_alternative"
+        placeholder="e.g. step away from the desk for 2 mins, drink water, name the boredom and wait 60s before reaching for the phone"></textarea>
+      <div class="note">Optional. Often easier to write a few minutes after the urge has passed than during it.</div>
     </div>
-    <label>Post outcome (after a few minutes)</label>
-    <div class="choice-row" data-choice="outcome_post">
-      <button data-value="satisfaction">Satisfaction</button>
-      <button data-value="regret">Regret</button>
-      <button data-value="continued_craving">Continued craving</button>
-      <button data-value="none">None</button>
+
+    <button class="save-btn" id="saveBtn" disabled>Save entry</button>
+  </section>
+
+  <!-- ============ HISTORY TAB ============ -->
+  <section class="tab" id="tab-history">
+    <div class="toolbar">
+      <button id="exportBtn">Export JSON</button>
+      <button id="clearBtn">Clear all</button>
+    </div>
+    <div class="entries-count" id="entriesCount"></div>
+    <div id="historyList"></div>
+  </section>
+
+  <!-- ============ ANALYTICS TAB ============ -->
+  <section class="tab" id="tab-analytics">
+    <div id="analyticsBody"></div>
+  </section>
+
+  <!-- ============ SETTINGS TAB ============ -->
+  <section class="tab" id="tab-settings">
+
+    <div class="settings-section">
+      <div class="settings-title">Google Sheets sync</div>
+      <div class="status-line">
+        <div class="status-dot off" id="statusDot"></div>
+        <span id="statusText">Not configured — entries saved locally only</span>
+      </div>
+      <label>Apps Script deployment URL</label>
+      <input type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec" autocomplete="off"
+        spellcheck="false">
+      <div class="note">Paste your deployed Apps Script URL. Every new entry will sync automatically.</div>
+      <div class="url-actions">
+        <button class="copy-btn" id="saveUrlBtn">Save URL</button>
+        <button class="copy-btn" id="testBtn">Test connection</button>
+        <button class="copy-btn" id="syncAllBtn">Push all entries</button>
+        <button class="copy-btn" id="clearUrlBtn">Clear URL</button>
+      </div>
     </div>
 
-    <div class="section-title">Context</div>
-    <div class="note">Time of day is captured automatically.</div>
-    <label>Location</label>
-    <div class="choice-row" data-choice="location">
-      <button data-value="home">Home</button>
-      <button data-value="work">Work</button>
-      <button data-value="outside">Outside</button>
-    </div>
-    <label>Social</label>
-    <div class="choice-row" data-choice="social">
-      <button data-value="alone">Alone</button>
-      <button data-value="with_others">With others</button>
-    </div>
-    <label>Device involved</label>
-    <div class="choice-row" data-choice="device">
-      <button data-value="phone">Phone</button>
-      <button data-value="none">None</button>
-    </div>
-
-    <div class="section-title">Pattern</div>
-    <label>Repeated this today already?</label>
-    <div class="choice-row" data-choice="repeat_today">
-      <button data-value="true">Yes</button>
-      <button data-value="false">No</button>
-    </div>
-    <label>How often does this loop run?</label>
-    <div class="choice-row" data-choice="frequency">
-      <button data-value="rare">Rare</button>
-      <button data-value="occasional">Occasional</button>
-      <button data-value="frequent">Frequent</button>
+    <div class="settings-section">
+      <div class="settings-title">Step-by-step setup</div>
+      <ol class="steps">
+        <li><span class="step-num">Step 1</span><span>Go to <strong>sheets.google.com</strong> → create a new blank
+            spreadsheet.</span></li>
+        <li><span class="step-num">Step 2</span><span>Click <strong>Extensions → Apps Script</strong> in the top menu.
+            Delete all the default code in the editor.</span></li>
+        <li><span class="step-num">Step 3</span><span>Paste the code below (tap <em>Copy code</em>). Click the Save icon
+            (Ctrl+S / Cmd+S).</span></li>
+        <li><span class="step-num">Step 4</span><span>Click <strong>Deploy → New deployment</strong>. Set Type:
+            <strong>Web app</strong>. Execute as: <strong>Me</strong>. Who has access: <strong>Anyone</strong>. Click
+            Deploy. Authorize when Google asks.</span></li>
+        <li><span class="step-num">Step 5</span><span>Copy the <strong>Web app URL</strong> (starts with
+            https://script.google.com/macros/s/). Paste it in the field above. Tap Save URL.</span></li>
+        <li><span class="step-num">Step 6</span><span>Tap <strong>Test connection</strong>. Wait 5 seconds. Check your
+            Google Sheet — a test row should appear in row 2. If it did, you're done.</span></li>
+        <li><span class="step-num">Step 7</span><span>Tap <strong>Push all entries</strong> to send everything already
+            stored locally. Future entries sync automatically on save.</span></li>
+      </ol>
     </div>
 
-    <div class="section-title">Reflection</div>
-    <label>What could you do differently next time?</label>
-    <textarea id="f_alternative" placeholder="e.g. step away from the desk for 2 mins, drink water, name the boredom and wait 60s before reaching for the phone"></textarea>
-    <div class="note">Optional. Often easier to write a few minutes after the urge has passed than during it.</div>
-  </div>
-
-  <button class="save-btn" id="saveBtn" disabled>Save entry</button>
-</section>
-
-<!-- ============ HISTORY TAB ============ -->
-<section class="tab" id="tab-history">
-  <div class="toolbar">
-    <button id="exportBtn">Export JSON</button>
-    <button id="clearBtn">Clear all</button>
-  </div>
-  <div class="entries-count" id="entriesCount"></div>
-  <div id="historyList"></div>
-</section>
-
-<!-- ============ ANALYTICS TAB ============ -->
-<section class="tab" id="tab-analytics">
-  <div id="analyticsBody"></div>
-</section>
-
-<!-- ============ SETTINGS TAB ============ -->
-<section class="tab" id="tab-settings">
-
-  <div class="settings-section">
-    <div class="settings-title">Google Sheets sync</div>
-    <div class="status-line">
-      <div class="status-dot off" id="statusDot"></div>
-      <span id="statusText">Not configured — entries saved locally only</span>
-    </div>
-    <label>Apps Script deployment URL</label>
-    <input type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec" autocomplete="off" spellcheck="false">
-    <div class="note">Paste your deployed Apps Script URL. Every new entry will sync automatically.</div>
-    <div class="url-actions">
-      <button class="copy-btn" id="saveUrlBtn">Save URL</button>
-      <button class="copy-btn" id="testBtn">Test connection</button>
-      <button class="copy-btn" id="syncAllBtn">Push all entries</button>
-      <button class="copy-btn" id="clearUrlBtn">Clear URL</button>
-    </div>
-  </div>
-
-  <div class="settings-section">
-    <div class="settings-title">Step-by-step setup</div>
-    <ol class="steps">
-      <li><span class="step-num">Step 1</span><span>Go to <strong>sheets.google.com</strong> → create a new blank spreadsheet.</span></li>
-      <li><span class="step-num">Step 2</span><span>Click <strong>Extensions → Apps Script</strong> in the top menu. Delete all the default code in the editor.</span></li>
-      <li><span class="step-num">Step 3</span><span>Paste the code below (tap <em>Copy code</em>). Click the Save icon (Ctrl+S / Cmd+S).</span></li>
-      <li><span class="step-num">Step 4</span><span>Click <strong>Deploy → New deployment</strong>. Set Type: <strong>Web app</strong>. Execute as: <strong>Me</strong>. Who has access: <strong>Anyone</strong>. Click Deploy. Authorize when Google asks.</span></li>
-      <li><span class="step-num">Step 5</span><span>Copy the <strong>Web app URL</strong> (starts with https://script.google.com/macros/s/). Paste it in the field above. Tap Save URL.</span></li>
-      <li><span class="step-num">Step 6</span><span>Tap <strong>Test connection</strong>. Wait 5 seconds. Check your Google Sheet — a test row should appear in row 2. If it did, you're done.</span></li>
-      <li><span class="step-num">Step 7</span><span>Tap <strong>Push all entries</strong> to send everything already stored locally. Future entries sync automatically on save.</span></li>
-    </ol>
-  </div>
-
-  <div class="settings-section">
-    <div class="settings-title">Apps Script code — paste into Extensions → Apps Script</div>
-    <pre class="code-block" id="appsScriptCode">// Behavior Loop Tracker — Google Apps Script receiver
+    <div class="settings-section">
+      <div class="settings-title">Apps Script code — paste into Extensions → Apps Script</div>
+      <pre class="code-block" id="appsScriptCode">// Behavior Loop Tracker — Google Apps Script receiver
 // Paste this entire block. Save. Deploy as Web app.
 // Execute as: Me  ·  Who has access: Anyone
 
@@ -1330,225 +1610,228 @@ function doGet(e) {
   return ContentService
     .createTextOutput('Loop Tracker endpoint is active.');
 }</pre>
-    <button class="copy-btn" id="copyCodeBtn">Copy code</button>
-  </div>
+      <button class="copy-btn" id="copyCodeBtn">Copy code</button>
+    </div>
 
-  <div class="settings-section">
-    <div class="settings-title">Free hosting — pick one</div>
-    <div class="hosting-card">
-      <div class="hosting-name">Netlify — recommended (you already use it)</div>
-      <div class="hosting-steps">
-        1. Go to netlify.com/drop<br>
-        2. Drag and drop the HTML file<br>
-        3. Get a URL like yourname.netlify.app — done.<br>
-        4. Open that URL on any device. Works immediately.
+    <div class="settings-section">
+      <div class="settings-title">Free hosting — pick one</div>
+      <div class="hosting-card">
+        <div class="hosting-name">Netlify — recommended (you already use it)</div>
+        <div class="hosting-steps">
+          1. Go to netlify.com/drop<br>
+          2. Drag and drop the HTML file<br>
+          3. Get a URL like yourname.netlify.app — done.<br>
+          4. Open that URL on any device. Works immediately.
+        </div>
+      </div>
+      <div class="hosting-card">
+        <div class="hosting-name">GitHub Pages — permanent, free</div>
+        <div class="hosting-steps">
+          1. Create a new public repo on github.com<br>
+          2. Upload the HTML file renamed to index.html<br>
+          3. Settings → Pages → Branch: main → Save<br>
+          4. URL: yourusername.github.io/repo-name
+        </div>
+      </div>
+      <div class="hosting-card">
+        <div class="hosting-name">Cloudflare Pages — fastest CDN, free</div>
+        <div class="hosting-steps">
+          1. pages.cloudflare.com → Upload<br>
+          2. Drop the HTML file as index.html<br>
+          3. URL: yourproject.pages.dev
+        </div>
       </div>
     </div>
-    <div class="hosting-card">
-      <div class="hosting-name">GitHub Pages — permanent, free</div>
-      <div class="hosting-steps">
-        1. Create a new public repo on github.com<br>
-        2. Upload the HTML file renamed to index.html<br>
-        3. Settings → Pages → Branch: main → Save<br>
-        4. URL: yourusername.github.io/repo-name
-      </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Install on phone as an app</div>
+      <ol class="steps">
+        <li><span class="step-num">Android</span><span>Open the hosted URL in <strong>Chrome</strong> → tap the ⋮ menu →
+            <strong>Add to Home screen</strong>. Opens full-screen, no browser bar, dark icon.</span></li>
+        <li><span class="step-num">iPhone</span><span>Open the hosted URL in <strong>Safari</strong> (not Chrome) → tap
+            the Share button → <strong>Add to Home Screen</strong>. Same result.</span></li>
+      </ol>
+      <div class="note" style="margin-top:10px">localStorage data stays on the device it was logged on. Sheets sync is
+        the way to access data across devices.</div>
     </div>
-    <div class="hosting-card">
-      <div class="hosting-name">Cloudflare Pages — fastest CDN, free</div>
-      <div class="hosting-steps">
-        1. pages.cloudflare.com → Upload<br>
-        2. Drop the HTML file as index.html<br>
-        3. URL: yourproject.pages.dev
-      </div>
-    </div>
-  </div>
 
-  <div class="settings-section">
-    <div class="settings-title">Install on phone as an app</div>
-    <ol class="steps">
-      <li><span class="step-num">Android</span><span>Open the hosted URL in <strong>Chrome</strong> → tap the ⋮ menu → <strong>Add to Home screen</strong>. Opens full-screen, no browser bar, dark icon.</span></li>
-      <li><span class="step-num">iPhone</span><span>Open the hosted URL in <strong>Safari</strong> (not Chrome) → tap the Share button → <strong>Add to Home Screen</strong>. Same result.</span></li>
-    </ol>
-    <div class="note" style="margin-top:10px">localStorage data stays on the device it was logged on. Sheets sync is the way to access data across devices.</div>
-  </div>
+  </section>
 
-</section>
+  <div class="toast" id="toast"></div>
 
-<div class="toast" id="toast"></div>
+  <script>
+    'use strict';
 
-<script>
-'use strict';
+    // ============ STORAGE ============
+    const STORAGE_KEY = 'blt_entries_v1';
 
-// ============ STORAGE ============
-const STORAGE_KEY = 'blt_entries_v1';
+    function loadEntries() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
 
-function loadEntries() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch (e) {
-    return [];
-  }
-}
+    function persist(entries) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
 
-function persist(entries) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-}
+    // ============ TIME OF DAY (IST) ============
+    const IST = 'Asia/Kolkata';
 
-// ============ TIME OF DAY (IST) ============
-const IST = 'Asia/Kolkata';
+    function getISTHour(date) {
+      return parseInt(
+        new Intl.DateTimeFormat('en-US', { timeZone: IST, hour: 'numeric', hour12: false }).format(date),
+        10
+      );
+    }
 
-function getISTHour(date) {
-  return parseInt(
-    new Intl.DateTimeFormat('en-US', { timeZone: IST, hour: 'numeric', hour12: false }).format(date),
-    10
-  );
-}
+    function toISTString(date) {
+      // Returns e.g. "2026-04-29 15:30:45 IST"
+      const p = new Intl.DateTimeFormat('en-CA', {
+        timeZone: IST,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      }).formatToParts(date);
+      const g = t => p.find(x => x.type === t).value;
+      return `${g('year')}-${g('month')}-${g('day')} ${g('hour')}:${g('minute')}:${g('second')} IST`;
+    }
 
-function toISTString(date) {
-  // Returns e.g. "2026-04-29 15:30:45 IST"
-  const p = new Intl.DateTimeFormat('en-CA', {
-    timeZone: IST,
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-    hour12: false
-  }).formatToParts(date);
-  const g = t => p.find(x => x.type === t).value;
-  return `${g('year')}-${g('month')}-${g('day')} ${g('hour')}:${g('minute')}:${g('second')} IST`;
-}
+    function deriveTimeOfDay(date) {
+      const h = getISTHour(date);
+      if (h >= 5 && h < 12) return 'morning';
+      if (h >= 12 && h < 17) return 'afternoon';
+      if (h >= 17 && h < 21) return 'evening';
+      return 'night';
+    }
 
-function deriveTimeOfDay(date) {
-  const h = getISTHour(date);
-  if (h >= 5 && h < 12) return 'morning';
-  if (h >= 12 && h < 17) return 'afternoon';
-  if (h >= 17 && h < 21) return 'evening';
-  return 'night';
-}
+    function formatTime(iso) {
+      const d = new Date(iso);
+      const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: IST }));
+      const istDate = new Date(d.toLocaleString('en-US', { timeZone: IST }));
+      const isToday = istDate.toDateString() === istNow.toDateString();
+      const yest = new Date(istNow); yest.setDate(istNow.getDate() - 1);
+      const isYest = istDate.toDateString() === yest.toDateString();
+      const time = d.toLocaleTimeString('en-IN', { timeZone: IST, hour: '2-digit', minute: '2-digit', hour12: false });
+      if (isToday) return 'Today ' + time + ' IST';
+      if (isYest) return 'Yesterday ' + time + ' IST';
+      return d.toLocaleDateString('en-IN', { timeZone: IST }) + ' ' + time + ' IST';
+    }
 
-function formatTime(iso) {
-  const d = new Date(iso);
-  const istNow  = new Date(new Date().toLocaleString('en-US', { timeZone: IST }));
-  const istDate = new Date(d.toLocaleString('en-US', { timeZone: IST }));
-  const isToday = istDate.toDateString() === istNow.toDateString();
-  const yest = new Date(istNow); yest.setDate(istNow.getDate() - 1);
-  const isYest = istDate.toDateString() === yest.toDateString();
-  const time = d.toLocaleTimeString('en-IN', { timeZone: IST, hour: '2-digit', minute: '2-digit', hour12: false });
-  if (isToday) return 'Today ' + time + ' IST';
-  if (isYest)  return 'Yesterday ' + time + ' IST';
-  return d.toLocaleDateString('en-IN', { timeZone: IST }) + ' ' + time + ' IST';
-}
-
-// ============ CHOICE GROUPS ============
-function setupChoiceGroups() {
-  document.querySelectorAll('.choice-row').forEach(row => {
-    const name = row.dataset.choice;
-    row.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const wasSelected = btn.classList.contains('selected');
-        row.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
-        if (!wasSelected) btn.classList.add('selected');
-        validateForm();
+    // ============ CHOICE GROUPS ============
+    function setupChoiceGroups() {
+      document.querySelectorAll('.choice-row').forEach(row => {
+        const name = row.dataset.choice;
+        row.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const wasSelected = btn.classList.contains('selected');
+            row.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+            if (!wasSelected) btn.classList.add('selected');
+            validateForm();
+          });
+        });
       });
-    });
-  });
-}
+    }
 
-function getChoiceValue(name) {
-  const el = document.querySelector(`[data-choice="${name}"] button.selected`);
-  return el ? el.dataset.value : null;
-}
+    function getChoiceValue(name) {
+      const el = document.querySelector(`[data-choice="${name}"] button.selected`);
+      return el ? el.dataset.value : null;
+    }
 
-function clearChoice(name) {
-  document.querySelectorAll(`[data-choice="${name}"] button`).forEach(b => b.classList.remove('selected'));
-}
+    function clearChoice(name) {
+      document.querySelectorAll(`[data-choice="${name}"] button`).forEach(b => b.classList.remove('selected'));
+    }
 
-// ============ FORM ============
-function validateForm() {
-  const stim = document.getElementById('f_stimulus_label').value.trim();
-  const thought = document.getElementById('f_thought').value.trim();
-  const action = getChoiceValue('action_type');
-  const aware = getChoiceValue('awareness');
-  const ok = stim && thought && action && aware;
-  document.getElementById('saveBtn').disabled = !ok;
-}
+    // ============ FORM ============
+    function validateForm() {
+      const stim = document.getElementById('f_stimulus_label').value.trim();
+      const thought = document.getElementById('f_thought').value.trim();
+      const action = getChoiceValue('action_type');
+      const aware = getChoiceValue('awareness');
+      const ok = stim && thought && action && aware;
+      document.getElementById('saveBtn').disabled = !ok;
+    }
 
-function clearForm() {
-  document.getElementById('f_stimulus_label').value = '';
-  document.getElementById('f_thought').value = '';
-  document.getElementById('f_urge_intensity').value = 5;
-  document.getElementById('f_urge_intensity_val').textContent = 5;
-  document.getElementById('f_hunger').value = 5;
-  document.getElementById('f_hunger_val').textContent = 5;
-  document.getElementById('f_emotion').value = '';
-  document.getElementById('f_behavior_detail').value = '';
-  document.getElementById('f_alternative').value = '';
-  document.querySelectorAll('.choice-row button.selected').forEach(b => b.classList.remove('selected'));
-  validateForm();
-}
+    function clearForm() {
+      document.getElementById('f_stimulus_label').value = '';
+      document.getElementById('f_thought').value = '';
+      document.getElementById('f_urge_intensity').value = 5;
+      document.getElementById('f_urge_intensity_val').textContent = 5;
+      document.getElementById('f_hunger').value = 5;
+      document.getElementById('f_hunger_val').textContent = 5;
+      document.getElementById('f_emotion').value = '';
+      document.getElementById('f_behavior_detail').value = '';
+      document.getElementById('f_alternative').value = '';
+      document.querySelectorAll('.choice-row button.selected').forEach(b => b.classList.remove('selected'));
+      validateForm();
+    }
 
-function saveEntry() {
-  const now = new Date();
-  const entry = {
-    id: now.getTime() + '_' + Math.random().toString(36).slice(2, 7),
-    timestamp: now.toISOString(),
-    timestamp_ist: toISTString(now),
-    stimulus_type: getChoiceValue('stimulus_type'),
-    stimulus_category: getChoiceValue('stimulus_category'),
-    stimulus_label: document.getElementById('f_stimulus_label').value.trim(),
-    thought: document.getElementById('f_thought').value.trim(),
-    thought_type: getChoiceValue('thought_type'),
-    urge_intensity: parseInt(document.getElementById('f_urge_intensity').value, 10),
-    urge_type: getChoiceValue('urge_type'),
-    urge_duration: getChoiceValue('urge_duration'),
-    hunger: parseInt(document.getElementById('f_hunger').value, 10),
-    energy: getChoiceValue('energy'),
-    tension: getChoiceValue('tension'),
-    fatigue: getChoiceValue('fatigue') === 'true' ? true : (getChoiceValue('fatigue') === 'false' ? false : null),
-    emotion: document.getElementById('f_emotion').value.trim() || null,
-    action_type: getChoiceValue('action_type'),
-    behavior_category: getChoiceValue('behavior_category'),
-    behavior_detail: document.getElementById('f_behavior_detail').value.trim() || null,
-    behavior_intensity: getChoiceValue('behavior_intensity'),
-    delay: getChoiceValue('delay'),
-    effort: getChoiceValue('effort'),
-    outcome_immediate: getChoiceValue('outcome_immediate'),
-    outcome_post: getChoiceValue('outcome_post'),
-    awareness: getChoiceValue('awareness'),
-    time_of_day: deriveTimeOfDay(now),
-    location: getChoiceValue('location'),
-    social: getChoiceValue('social'),
-    device: getChoiceValue('device'),
-    repeat_today: getChoiceValue('repeat_today') === 'true' ? true : (getChoiceValue('repeat_today') === 'false' ? false : null),
-    frequency: getChoiceValue('frequency'),
-    alternative: document.getElementById('f_alternative').value.trim() || null
-  };
+    function saveEntry() {
+      const now = new Date();
+      const entry = {
+        id: now.getTime() + '_' + Math.random().toString(36).slice(2, 7),
+        timestamp: now.toISOString(),
+        timestamp_ist: toISTString(now),
+        stimulus_type: getChoiceValue('stimulus_type'),
+        stimulus_category: getChoiceValue('stimulus_category'),
+        stimulus_label: document.getElementById('f_stimulus_label').value.trim(),
+        thought: document.getElementById('f_thought').value.trim(),
+        thought_type: getChoiceValue('thought_type'),
+        urge_intensity: parseInt(document.getElementById('f_urge_intensity').value, 10),
+        urge_type: getChoiceValue('urge_type'),
+        urge_duration: getChoiceValue('urge_duration'),
+        hunger: parseInt(document.getElementById('f_hunger').value, 10),
+        energy: getChoiceValue('energy'),
+        tension: getChoiceValue('tension'),
+        fatigue: getChoiceValue('fatigue') === 'true' ? true : (getChoiceValue('fatigue') === 'false' ? false : null),
+        emotion: document.getElementById('f_emotion').value.trim() || null,
+        action_type: getChoiceValue('action_type'),
+        behavior_category: getChoiceValue('behavior_category'),
+        behavior_detail: document.getElementById('f_behavior_detail').value.trim() || null,
+        behavior_intensity: getChoiceValue('behavior_intensity'),
+        delay: getChoiceValue('delay'),
+        effort: getChoiceValue('effort'),
+        outcome_immediate: getChoiceValue('outcome_immediate'),
+        outcome_post: getChoiceValue('outcome_post'),
+        awareness: getChoiceValue('awareness'),
+        time_of_day: deriveTimeOfDay(now),
+        location: getChoiceValue('location'),
+        social: getChoiceValue('social'),
+        device: getChoiceValue('device'),
+        repeat_today: getChoiceValue('repeat_today') === 'true' ? true : (getChoiceValue('repeat_today') === 'false' ? false : null),
+        frequency: getChoiceValue('frequency'),
+        alternative: document.getElementById('f_alternative').value.trim() || null
+      };
 
-  const entries = loadEntries();
-  entries.push(entry);
-  persist(entries);
+      const entries = loadEntries();
+      entries.push(entry);
+      persist(entries);
 
-  syncToSheets(entry);
+      syncToSheets(entry);
 
-  clearForm();
-  document.getElementById('expandedSection').classList.add('hidden');
-  document.getElementById('toggleExpand').textContent = '+ Expand all fields';
+      clearForm();
+      document.getElementById('expandedSection').classList.add('hidden');
+      document.getElementById('toggleExpand').textContent = '+ Expand all fields';
 
-  toast('Entry saved · #' + entries.length);
-}
+      toast('Entry saved · #' + entries.length);
+    }
 
-// ============ HISTORY ============
-function renderHistory() {
-  const entries = loadEntries().slice().reverse();
-  const list = document.getElementById('historyList');
-  document.getElementById('entriesCount').textContent =
-    entries.length === 0 ? '' : entries.length + ' total ' + (entries.length === 1 ? 'entry' : 'entries');
+    // ============ HISTORY ============
+    function renderHistory() {
+      const entries = loadEntries().slice().reverse();
+      const list = document.getElementById('historyList');
+      document.getElementById('entriesCount').textContent =
+        entries.length === 0 ? '' : entries.length + ' total ' + (entries.length === 1 ? 'entry' : 'entries');
 
-  if (entries.length === 0) {
-    list.innerHTML = '<div class="empty">No entries yet.<br>Track an urge to start.</div>';
-    return;
-  }
+      if (entries.length === 0) {
+        list.innerHTML = '<div class="empty">No entries yet.<br>Track an urge to start.</div>';
+        return;
+      }
 
-  list.innerHTML = entries.map(e => {
-    return `
+      list.innerHTML = entries.map(e => {
+        return `
       <div class="entry" data-id="${e.id}">
         <div class="entry-head">
           <div class="entry-stim">${esc(e.stimulus_label)}</div>
@@ -1593,43 +1876,43 @@ function renderHistory() {
           <button class="delete-btn" data-del="${e.id}">Delete entry</button>
         </div>
       </div>`;
-  }).join('');
+      }).join('');
 
-  list.querySelectorAll('.entry').forEach(el => {
-    el.addEventListener('click', ev => {
-      if (ev.target.matches('[data-del]')) return;
-      el.querySelector('.entry-detail').classList.toggle('open');
-    });
-  });
+      list.querySelectorAll('.entry').forEach(el => {
+        el.addEventListener('click', ev => {
+          if (ev.target.matches('[data-del]')) return;
+          el.querySelector('.entry-detail').classList.toggle('open');
+        });
+      });
 
-  list.querySelectorAll('[data-del]').forEach(btn => {
-    btn.addEventListener('click', ev => {
-      ev.stopPropagation();
-      const id = btn.dataset.del;
-      const all = loadEntries().filter(e => e.id !== id);
-      persist(all);
-      renderHistory();
-      toast('Entry deleted');
-    });
-  });
+      list.querySelectorAll('[data-del]').forEach(btn => {
+        btn.addEventListener('click', ev => {
+          ev.stopPropagation();
+          const id = btn.dataset.del;
+          const all = loadEntries().filter(e => e.id !== id);
+          persist(all);
+          renderHistory();
+          toast('Entry deleted');
+        });
+      });
 
-  list.querySelectorAll('[data-ref-id]').forEach(el => {
-    el.addEventListener('click', ev => {
-      ev.stopPropagation();
-      openReflectionEditor(el);
-    });
-  });
-}
+      list.querySelectorAll('[data-ref-id]').forEach(el => {
+        el.addEventListener('click', ev => {
+          ev.stopPropagation();
+          openReflectionEditor(el);
+        });
+      });
+    }
 
-function openReflectionEditor(el) {
-  const id = el.dataset.refId;
-  const entries = loadEntries();
-  const entry = entries.find(e => e.id === id);
-  if (!entry) return;
+    function openReflectionEditor(el) {
+      const id = el.dataset.refId;
+      const entries = loadEntries();
+      const entry = entries.find(e => e.id === id);
+      if (!entry) return;
 
-  const current = entry.alternative || '';
-  const wrap = document.createElement('div');
-  wrap.innerHTML = `
+      const current = entry.alternative || '';
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
     <textarea class="reflection-textarea" placeholder="What could you do differently next time?">${esc(current)}</textarea>
     <div class="reflection-actions">
       <button class="primary" data-act="save">Save</button>
@@ -1638,80 +1921,80 @@ function openReflectionEditor(el) {
     </div>
   `;
 
-  const parent = el.parentElement;
-  el.style.display = 'none';
-  parent.appendChild(wrap);
+      const parent = el.parentElement;
+      el.style.display = 'none';
+      parent.appendChild(wrap);
 
-  const ta = wrap.querySelector('textarea');
-  ta.focus();
-  ta.setSelectionRange(ta.value.length, ta.value.length);
-
-  wrap.querySelector('[data-act="save"]').addEventListener('click', ev => {
-    ev.stopPropagation();
-    const val = ta.value.trim();
-    const all = loadEntries();
-    const idx = all.findIndex(e => e.id === id);
-    if (idx >= 0) {
-      all[idx].alternative = val || null;
-      persist(all);
-      renderHistory();
-      toast(val ? 'Reflection saved' : 'Reflection cleared');
-    }
-  });
-  wrap.querySelector('[data-act="cancel"]').addEventListener('click', ev => {
-    ev.stopPropagation();
-    wrap.remove();
-    el.style.display = '';
-  });
-  const clearBtn = wrap.querySelector('[data-act="clear"]');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', ev => {
-      ev.stopPropagation();
-      ta.value = '';
+      const ta = wrap.querySelector('textarea');
       ta.focus();
-    });
-  }
-  wrap.addEventListener('click', ev => ev.stopPropagation());
-}
+      ta.setSelectionRange(ta.value.length, ta.value.length);
 
-function detailRow(label, value) {
-  if (value === null || value === undefined || value === '') return '';
-  return `<dt>${label}</dt><dd>${esc(String(value))}</dd>`;
-}
+      wrap.querySelector('[data-act="save"]').addEventListener('click', ev => {
+        ev.stopPropagation();
+        const val = ta.value.trim();
+        const all = loadEntries();
+        const idx = all.findIndex(e => e.id === id);
+        if (idx >= 0) {
+          all[idx].alternative = val || null;
+          persist(all);
+          renderHistory();
+          toast(val ? 'Reflection saved' : 'Reflection cleared');
+        }
+      });
+      wrap.querySelector('[data-act="cancel"]').addEventListener('click', ev => {
+        ev.stopPropagation();
+        wrap.remove();
+        el.style.display = '';
+      });
+      const clearBtn = wrap.querySelector('[data-act="clear"]');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', ev => {
+          ev.stopPropagation();
+          ta.value = '';
+          ta.focus();
+        });
+      }
+      wrap.addEventListener('click', ev => ev.stopPropagation());
+    }
 
-function esc(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
+    function detailRow(label, value) {
+      if (value === null || value === undefined || value === '') return '';
+      return `<dt>${label}</dt><dd>${esc(String(value))}</dd>`;
+    }
 
-// ============ ANALYTICS ============
-function renderAnalytics() {
-  const entries = loadEntries();
-  const body = document.getElementById('analyticsBody');
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
 
-  if (entries.length === 0) {
-    body.innerHTML = '<div class="empty">No data yet.<br>Add a few entries to see your patterns.</div>';
-    return;
-  }
+    // ============ ANALYTICS ============
+    function renderAnalytics() {
+      const entries = loadEntries();
+      const body = document.getElementById('analyticsBody');
 
-  const summary =
-    `<div class="section-summary"><span class="num">${entries.length}</span> entries logged · Patterns become visible after roughly 20–30 entries. Until then, treat these numbers as preliminary.</div>`;
+      if (entries.length === 0) {
+        body.innerHTML = '<div class="empty">No data yet.<br>Add a few entries to see your patterns.</div>';
+        return;
+      }
 
-  // ----- Loops -----
-  const loops = detectLoops(entries);
-  let loopsHtml = '<div class="section-heading">Detected loops</div>';
-  if (loops.length === 0) {
-    loopsHtml += '<div class="empty">No repeating loops yet. Keep logging.</div>';
-  } else {
-    loopsHtml += loops.map(l => {
-      const avgUrge = (l.entries.reduce((s, e) => s + (e.urge_intensity || 0), 0) / l.entries.length).toFixed(1);
-      const topTime = topOf(l.entries.map(e => e.time_of_day));
-      const topLoc = topOf(l.entries.map(e => e.location));
-      const topSoc = topOf(l.entries.map(e => e.social));
-      const reflections = l.entries.map(e => e.alternative).filter(Boolean);
-      const latestRef = reflections.length ? reflections[reflections.length - 1] : null;
-      return `
+      const summary =
+        `<div class="section-summary"><span class="num">${entries.length}</span> entries logged · Patterns become visible after roughly 20–30 entries. Until then, treat these numbers as preliminary.</div>`;
+
+      // ----- Loops -----
+      const loops = detectLoops(entries);
+      let loopsHtml = '<div class="section-heading">Detected loops</div>';
+      if (loops.length === 0) {
+        loopsHtml += '<div class="empty">No repeating loops yet. Keep logging.</div>';
+      } else {
+        loopsHtml += loops.map(l => {
+          const avgUrge = (l.entries.reduce((s, e) => s + (e.urge_intensity || 0), 0) / l.entries.length).toFixed(1);
+          const topTime = topOf(l.entries.map(e => e.time_of_day));
+          const topLoc = topOf(l.entries.map(e => e.location));
+          const topSoc = topOf(l.entries.map(e => e.social));
+          const reflections = l.entries.map(e => e.alternative).filter(Boolean);
+          const latestRef = reflections.length ? reflections[reflections.length - 1] : null;
+          return `
         <div class="loop-card">
           <div class="loop-flow">
             ${esc(l.parts.stim)}<span class="arrow">→</span>${esc(l.parts.thought)}<span class="arrow">→</span>${esc(l.parts.behav)}<span class="arrow">→</span>${esc(l.parts.outcome)}
@@ -1725,331 +2008,342 @@ function renderAnalytics() {
           </div>
           ${latestRef ? `<div class="loop-reflection"><span class="ref-label">Your note — what to do differently</span>${esc(latestRef)}</div>` : ''}
         </div>`;
-    }).join('');
-  }
+        }).join('');
+      }
 
-  // ----- Single-value stats -----
-  const topStim = topOf(entries.map(e => e.stimulus_label));
-  const topThought = topOf(entries.map(e => normalizeThought(e.thought)));
-  const avgUrge = (entries.reduce((s, e) => s + (e.urge_intensity || 0), 0) / entries.length).toFixed(1);
-  const topTOD = topOf(entries.map(e => e.time_of_day));
-  const topPost = topOf(entries.map(e => e.outcome_post));
+      // ----- Single-value stats -----
+      const topStim = topOf(entries.map(e => e.stimulus_label));
+      const topThought = topOf(entries.map(e => normalizeThought(e.thought)));
+      const avgUrge = (entries.reduce((s, e) => s + (e.urge_intensity || 0), 0) / entries.length).toFixed(1);
+      const topTOD = topOf(entries.map(e => e.time_of_day));
+      const topPost = topOf(entries.map(e => e.outcome_post));
 
-  // Recurrence rate: % of stimulus_labels (normalized) that appear ≥ 2 times
-  const stimMap = countMap(entries.map(e => (e.stimulus_label || '').toLowerCase().trim()).filter(Boolean));
-  const uniqueStims = Object.keys(stimMap).length;
-  const repeatedStims = Object.values(stimMap).filter(c => c >= 2).length;
-  const recurrenceRate = uniqueStims === 0 ? 0 : Math.round((repeatedStims / uniqueStims) * 100);
+      // Recurrence rate: % of stimulus_labels (normalized) that appear ≥ 2 times
+      const stimMap = countMap(entries.map(e => (e.stimulus_label || '').toLowerCase().trim()).filter(Boolean));
+      const uniqueStims = Object.keys(stimMap).length;
+      const repeatedStims = Object.values(stimMap).filter(c => c >= 2).length;
+      const recurrenceRate = uniqueStims === 0 ? 0 : Math.round((repeatedStims / uniqueStims) * 100);
 
-  let statsHtml = '<div class="section-heading">Top patterns</div>';
-  statsHtml += statCard('Top stimulus', topStim || '—');
-  statsHtml += statCard('Most common thought', topThought || '—');
-  statsHtml += statCard('Average urge intensity', avgUrge + ' / 10', true);
-  statsHtml += statCard('Most common time of day', topTOD || '—');
-  statsHtml += statCard('Most common post-outcome', topPost || '—');
-  statsHtml += statCard('Recurrence rate', recurrenceRate + '%', true,
-    repeatedStims + ' of ' + uniqueStims + ' stimuli have repeated');
+      let statsHtml = '<div class="section-heading">Top patterns</div>';
+      statsHtml += statCard('Top stimulus', topStim || '—');
+      statsHtml += statCard('Most common thought', topThought || '—');
+      statsHtml += statCard('Average urge intensity', avgUrge + ' / 10', true);
+      statsHtml += statCard('Most common time of day', topTOD || '—');
+      statsHtml += statCard('Most common post-outcome', topPost || '—');
+      statsHtml += statCard('Recurrence rate', recurrenceRate + '%', true,
+        repeatedStims + ' of ' + uniqueStims + ' stimuli have repeated');
 
-  // ----- Distributions -----
-  const actionDist = countMap(entries.map(e => e.action_type).filter(Boolean));
-  const awareDist = countMap(entries.map(e => e.awareness).filter(Boolean));
+      // ----- Distributions -----
+      const actionDist = countMap(entries.map(e => e.action_type).filter(Boolean));
+      const awareDist = countMap(entries.map(e => e.awareness).filter(Boolean));
 
-  let distHtml = '<div class="section-heading">Action distribution</div>';
-  distHtml += distCard(actionDist, ['acted','delayed','resisted','replaced']);
-  distHtml += '<div class="section-heading">Awareness distribution</div>';
-  distHtml += distCard(awareDist, ['before','during','after']);
+      let distHtml = '<div class="section-heading">Action distribution</div>';
+      distHtml += distCard(actionDist, ['acted', 'delayed', 'resisted', 'replaced']);
+      distHtml += '<div class="section-heading">Awareness distribution</div>';
+      distHtml += distCard(awareDist, ['before', 'during', 'after']);
 
-  body.innerHTML = summary + loopsHtml + statsHtml + distHtml;
-}
+      body.innerHTML = summary + loopsHtml + statsHtml + distHtml;
+    }
 
-function statCard(label, value, big, sub) {
-  return `<div class="stat">
+    function statCard(label, value, big, sub) {
+      return `<div class="stat">
     <div class="stat-label">${label}</div>
     <div class="stat-val ${big ? 'big' : ''}">${esc(String(value))}</div>
     ${sub ? `<div class="stat-label" style="margin-top:6px;margin-bottom:0;text-transform:none;letter-spacing:0.3px">${esc(sub)}</div>` : ''}
   </div>`;
-}
+    }
 
-function distCard(map, order) {
-  const total = Object.values(map).reduce((a, b) => a + b, 0);
-  if (total === 0) return '<div class="empty">No data</div>';
-  const keys = order.filter(k => map[k]).concat(Object.keys(map).filter(k => !order.includes(k)));
-  return '<div class="stat">' + keys.map(k => {
-    const c = map[k] || 0;
-    const pct = Math.round((c / total) * 100);
-    return `
+    function distCard(map, order) {
+      const total = Object.values(map).reduce((a, b) => a + b, 0);
+      if (total === 0) return '<div class="empty">No data</div>';
+      const keys = order.filter(k => map[k]).concat(Object.keys(map).filter(k => !order.includes(k)));
+      return '<div class="stat">' + keys.map(k => {
+        const c = map[k] || 0;
+        const pct = Math.round((c / total) * 100);
+        return `
       <div class="dist-row">
         <span class="lbl">${esc(k)}</span>
         <span class="num">${c} · ${pct}%</span>
       </div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
     `;
-  }).join('') + '</div>';
-}
+      }).join('') + '</div>';
+    }
 
-function detectLoops(entries) {
-  // Group by normalized (stim_label + thought + behavior_category + outcome_post)
-  // Only use entries with at least stim_label and thought
-  const groups = {};
-  entries.forEach(e => {
-    const stim = (e.stimulus_label || '').toLowerCase().trim();
-    const thought = normalizeThought(e.thought);
-    const behav = e.behavior_category || (e.action_type === 'acted' ? 'acted' : null);
-    const outcome = e.outcome_post || null;
-    if (!stim || !thought) return;
-    const key = [stim, thought, behav || '?', outcome || '?'].join(' | ');
-    if (!groups[key]) {
-      groups[key] = {
-        parts: {
-          stim,
-          thought: truncate(e.thought, 40),
-          behav: behav || 'behavior',
-          outcome: outcome || 'no outcome logged'
-        },
-        count: 0,
-        entries: []
+    function detectLoops(entries) {
+      // Group by normalized (stim_label + thought + behavior_category + outcome_post)
+      // Only use entries with at least stim_label and thought
+      const groups = {};
+      entries.forEach(e => {
+        const stim = (e.stimulus_label || '').toLowerCase().trim();
+        const thought = normalizeThought(e.thought);
+        const behav = e.behavior_category || (e.action_type === 'acted' ? 'acted' : null);
+        const outcome = e.outcome_post || null;
+        if (!stim || !thought) return;
+        const key = [stim, thought, behav || '?', outcome || '?'].join(' | ');
+        if (!groups[key]) {
+          groups[key] = {
+            parts: {
+              stim,
+              thought: truncate(e.thought, 40),
+              behav: behav || 'behavior',
+              outcome: outcome || 'no outcome logged'
+            },
+            count: 0,
+            entries: []
+          };
+        }
+        groups[key].count++;
+        groups[key].entries.push(e);
+      });
+      return Object.values(groups)
+        .filter(g => g.count >= 2)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+    }
+
+    function normalizeThought(t) {
+      if (!t) return null;
+      return t.toLowerCase().trim().replace(/[.!?,;]+$/, '').slice(0, 60);
+    }
+
+    function truncate(s, n) {
+      if (!s) return '';
+      return s.length > n ? s.slice(0, n - 1) + '…' : s;
+    }
+
+    function topOf(arr) {
+      const map = countMap(arr.filter(v => v !== null && v !== undefined && v !== ''));
+      let best = null, bestC = 0;
+      for (const k in map) {
+        if (map[k] > bestC) { bestC = map[k]; best = k; }
+      }
+      return best;
+    }
+
+    function countMap(arr) {
+      const m = {};
+      arr.forEach(v => { m[v] = (m[v] || 0) + 1; });
+      return m;
+    }
+
+    // ============ GOOGLE SHEETS SYNC ============
+    const SHEETS_URL_KEY = 'blt_sheets_url';
+
+    function getSheetsUrl() {
+      return localStorage.getItem(SHEETS_URL_KEY) || '';
+    }
+
+    async function syncToSheets(entry) {
+      const url = getSheetsUrl();
+      if (!url) return;
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(entry)
+        });
+      } catch (e) {
+        // fail silently — data is already safe in localStorage
+      }
+    }
+
+    async function syncAllToSheets() {
+      const url = getSheetsUrl();
+      if (!url) { toast('Save a Sheets URL first'); return; }
+      const entries = loadEntries();
+      if (!entries.length) { toast('No entries to sync'); return; }
+      const btn = document.getElementById('syncAllBtn');
+      btn.disabled = true;
+      btn.textContent = 'Syncing...';
+      for (const entry of entries) {
+        await syncToSheets(entry);
+        await new Promise(r => setTimeout(r, 120));
+      }
+      btn.disabled = false;
+      btn.textContent = 'Push all entries';
+      toast(entries.length + ' entries sent to Sheets');
+    }
+
+    async function testSheetsConnection() {
+      const url = getSheetsUrl();
+      if (!url) { toast('Save a URL first'); return; }
+      const testEntry = {
+        timestamp: new Date().toISOString(),
+        stimulus_label: '— TEST ROW — delete this',
+        thought: 'connection test from Behavior Loop Tracker',
+        urge_intensity: 0,
+        action_type: 'test',
+        awareness: 'test',
+        time_of_day: deriveTimeOfDay(new Date())
       };
+      await syncToSheets(testEntry);
+      toast('Sent — check your Sheet for the test row');
     }
-    groups[key].count++;
-    groups[key].entries.push(e);
-  });
-  return Object.values(groups)
-    .filter(g => g.count >= 2)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
-}
 
-function normalizeThought(t) {
-  if (!t) return null;
-  return t.toLowerCase().trim().replace(/[.!?,;]+$/, '').slice(0, 60);
-}
-
-function truncate(s, n) {
-  if (!s) return '';
-  return s.length > n ? s.slice(0, n - 1) + '…' : s;
-}
-
-function topOf(arr) {
-  const map = countMap(arr.filter(v => v !== null && v !== undefined && v !== ''));
-  let best = null, bestC = 0;
-  for (const k in map) {
-    if (map[k] > bestC) { bestC = map[k]; best = k; }
-  }
-  return best;
-}
-
-function countMap(arr) {
-  const m = {};
-  arr.forEach(v => { m[v] = (m[v] || 0) + 1; });
-  return m;
-}
-
-// ============ GOOGLE SHEETS SYNC ============
-const SHEETS_URL_KEY = 'blt_sheets_url';
-
-function getSheetsUrl() {
-  return localStorage.getItem(SHEETS_URL_KEY) || '';
-}
-
-async function syncToSheets(entry) {
-  const url = getSheetsUrl();
-  if (!url) return;
-  try {
-    await fetch(url, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(entry)
-    });
-  } catch(e) {
-    // fail silently — data is already safe in localStorage
-  }
-}
-
-async function syncAllToSheets() {
-  const url = getSheetsUrl();
-  if (!url) { toast('Save a Sheets URL first'); return; }
-  const entries = loadEntries();
-  if (!entries.length) { toast('No entries to sync'); return; }
-  const btn = document.getElementById('syncAllBtn');
-  btn.disabled = true;
-  btn.textContent = 'Syncing...';
-  for (const entry of entries) {
-    await syncToSheets(entry);
-    await new Promise(r => setTimeout(r, 120));
-  }
-  btn.disabled = false;
-  btn.textContent = 'Push all entries';
-  toast(entries.length + ' entries sent to Sheets');
-}
-
-async function testSheetsConnection() {
-  const url = getSheetsUrl();
-  if (!url) { toast('Save a URL first'); return; }
-  const testEntry = {
-    timestamp: new Date().toISOString(),
-    stimulus_label: '— TEST ROW — delete this',
-    thought: 'connection test from Behavior Loop Tracker',
-    urge_intensity: 0,
-    action_type: 'test',
-    awareness: 'test',
-    time_of_day: deriveTimeOfDay(new Date())
-  };
-  await syncToSheets(testEntry);
-  toast('Sent — check your Sheet for the test row');
-}
-
-function updateSheetsStatus() {
-  const url = getSheetsUrl();
-  const dot = document.getElementById('statusDot');
-  const text = document.getElementById('statusText');
-  if (!dot || !text) return;
-  if (url) {
-    dot.className = 'status-dot on';
-    const short = url.length > 50 ? url.slice(0, 47) + '...' : url;
-    text.textContent = 'Syncing to Sheets · ' + short;
-  } else {
-    dot.className = 'status-dot off';
-    text.textContent = 'Not configured — entries saved locally only';
-  }
-}
-
-function initSettings() {
-  const urlInput = document.getElementById('sheetsUrl');
-  urlInput.value = getSheetsUrl();
-  updateSheetsStatus();
-
-  document.getElementById('saveUrlBtn').addEventListener('click', () => {
-    const val = urlInput.value.trim();
-    if (val && !val.startsWith('https://')) {
-      toast('URL must start with https://');
-      return;
+    function updateSheetsStatus() {
+      const url = getSheetsUrl();
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      if (!dot || !text) return;
+      if (url) {
+        dot.className = 'status-dot on';
+        const short = url.length > 50 ? url.slice(0, 47) + '...' : url;
+        text.textContent = 'Syncing to Sheets · ' + short;
+      } else {
+        dot.className = 'status-dot off';
+        text.textContent = 'Not configured — entries saved locally only';
+      }
     }
-    localStorage.setItem(SHEETS_URL_KEY, val);
-    updateSheetsStatus();
-    toast(val ? 'URL saved' : 'URL cleared');
-  });
 
-  document.getElementById('clearUrlBtn').addEventListener('click', () => {
-    urlInput.value = '';
-    localStorage.removeItem(SHEETS_URL_KEY);
-    updateSheetsStatus();
-    toast('Sheets URL cleared');
-  });
+    function initSettings() {
+      const urlInput = document.getElementById('sheetsUrl');
+      urlInput.value = getSheetsUrl();
+      updateSheetsStatus();
 
-  document.getElementById('testBtn').addEventListener('click', testSheetsConnection);
-  document.getElementById('syncAllBtn').addEventListener('click', syncAllToSheets);
+      document.getElementById('saveUrlBtn').addEventListener('click', () => {
+        const val = urlInput.value.trim();
+        if (val && !val.startsWith('https://')) {
+          toast('URL must start with https://');
+          return;
+        }
+        localStorage.setItem(SHEETS_URL_KEY, val);
+        updateSheetsStatus();
+        toast(val ? 'URL saved' : 'URL cleared');
+      });
 
-  document.getElementById('copyCodeBtn').addEventListener('click', () => {
-    const code = document.getElementById('appsScriptCode').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      toast('Code copied to clipboard');
-    }).catch(() => {
-      toast('Select + copy the code block manually');
+      document.getElementById('clearUrlBtn').addEventListener('click', () => {
+        urlInput.value = '';
+        localStorage.removeItem(SHEETS_URL_KEY);
+        updateSheetsStatus();
+        toast('Sheets URL cleared');
+      });
+
+      document.getElementById('testBtn').addEventListener('click', testSheetsConnection);
+      document.getElementById('syncAllBtn').addEventListener('click', syncAllToSheets);
+
+      document.getElementById('copyCodeBtn').addEventListener('click', () => {
+        const code = document.getElementById('appsScriptCode').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          toast('Code copied to clipboard');
+        }).catch(() => {
+          toast('Select + copy the code block manually');
+        });
+      });
+    }
+
+    // ============ TABS ============
+    function switchTab(name) {
+      document.querySelectorAll('nav button').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === name);
+      });
+      document.querySelectorAll('.tab').forEach(t => {
+        t.classList.toggle('active', t.id === 'tab-' + name);
+      });
+      if (name === 'history') renderHistory();
+      if (name === 'analytics') renderAnalytics();
+      if (name === 'settings') updateSheetsStatus();
+      window.scrollTo(0, 0);
+    }
+
+    // ============ TOAST ============
+    let toastTimer = null;
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+    }
+
+    // ============ EXPORT / CLEAR ============
+    function exportData() {
+      const data = JSON.stringify(loadEntries(), null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'behavior-loop-tracker-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearAll() {
+      if (loadEntries().length === 0) { toast('Nothing to clear'); return; }
+      if (confirm('Delete all entries? This cannot be undone.')) {
+        persist([]);
+        renderHistory();
+        toast('All entries cleared');
+      }
+    }
+
+    // ============ INIT ============
+    document.addEventListener('DOMContentLoaded', () => {
+      setupChoiceGroups();
+
+      document.getElementById('f_urge_intensity').addEventListener('input', (e) => {
+        document.getElementById('f_urge_intensity_val').textContent = e.target.value;
+      });
+      document.getElementById('f_hunger').addEventListener('input', (e) => {
+        document.getElementById('f_hunger_val').textContent = e.target.value;
+      });
+      document.getElementById('f_stimulus_label').addEventListener('input', validateForm);
+      document.getElementById('f_thought').addEventListener('input', validateForm);
+
+      document.getElementById('toggleExpand').addEventListener('click', () => {
+        const sec = document.getElementById('expandedSection');
+        const btn = document.getElementById('toggleExpand');
+        sec.classList.toggle('hidden');
+        btn.textContent = sec.classList.contains('hidden') ? '+ Expand all fields' : '− Hide expanded fields';
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', saveEntry);
+
+      document.querySelectorAll('nav button').forEach(b => {
+        b.addEventListener('click', () => switchTab(b.dataset.tab));
+      });
+
+      document.getElementById('exportBtn').addEventListener('click', exportData);
+      document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+      // Theme toggle — purely additive, no existing logic affected
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('blt_theme', next);
+        const mc = document.querySelector('meta[name="theme-color"]');
+        if (mc) mc.setAttribute('content', next === 'light' ? '#ffffff' : '#0a0a0a');
+      });
+
+      initSettings();
+
+      // PWA manifest injection (enables Android "Add to Home Screen" prompt)
+      try {
+        const manifest = {
+          name: 'Behavior Loop Tracker',
+          short_name: 'Loop Tracker',
+          start_url: './',
+          display: 'standalone',
+          background_color: '#0a0a0a',
+          theme_color: '#0a0a0a',
+          icons: [{
+            src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0a0a"/><text y=".9em" font-size="80" x="10" fill="%23f5f5f5">⟳</text></svg>',
+            sizes: '192x192',
+            type: 'image/svg+xml'
+          }]
+        };
+        const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = URL.createObjectURL(blob);
+        document.head.appendChild(link);
+      } catch (e) { }
+
+      validateForm();
     });
-  });
-}
-
-// ============ TABS ============
-function switchTab(name) {
-  document.querySelectorAll('nav button').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === name);
-  });
-  document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.id === 'tab-' + name);
-  });
-  if (name === 'history') renderHistory();
-  if (name === 'analytics') renderAnalytics();
-  if (name === 'settings') updateSheetsStatus();
-  window.scrollTo(0, 0);
-}
-
-// ============ TOAST ============
-let toastTimer = null;
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
-}
-
-// ============ EXPORT / CLEAR ============
-function exportData() {
-  const data = JSON.stringify(loadEntries(), null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'behavior-loop-tracker-' + new Date().toISOString().slice(0, 10) + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function clearAll() {
-  if (loadEntries().length === 0) { toast('Nothing to clear'); return; }
-  if (confirm('Delete all entries? This cannot be undone.')) {
-    persist([]);
-    renderHistory();
-    toast('All entries cleared');
-  }
-}
-
-// ============ INIT ============
-document.addEventListener('DOMContentLoaded', () => {
-  setupChoiceGroups();
-
-  document.getElementById('f_urge_intensity').addEventListener('input', (e) => {
-    document.getElementById('f_urge_intensity_val').textContent = e.target.value;
-  });
-  document.getElementById('f_hunger').addEventListener('input', (e) => {
-    document.getElementById('f_hunger_val').textContent = e.target.value;
-  });
-  document.getElementById('f_stimulus_label').addEventListener('input', validateForm);
-  document.getElementById('f_thought').addEventListener('input', validateForm);
-
-  document.getElementById('toggleExpand').addEventListener('click', () => {
-    const sec = document.getElementById('expandedSection');
-    const btn = document.getElementById('toggleExpand');
-    sec.classList.toggle('hidden');
-    btn.textContent = sec.classList.contains('hidden') ? '+ Expand all fields' : '− Hide expanded fields';
-  });
-
-  document.getElementById('saveBtn').addEventListener('click', saveEntry);
-
-  document.querySelectorAll('nav button').forEach(b => {
-    b.addEventListener('click', () => switchTab(b.dataset.tab));
-  });
-
-  document.getElementById('exportBtn').addEventListener('click', exportData);
-  document.getElementById('clearBtn').addEventListener('click', clearAll);
-
-  initSettings();
-
-  // PWA manifest injection (enables Android "Add to Home Screen" prompt)
-  try {
-    const manifest = {
-      name: 'Behavior Loop Tracker',
-      short_name: 'Loop Tracker',
-      start_url: './',
-      display: 'standalone',
-      background_color: '#0a0a0a',
-      theme_color: '#0a0a0a',
-      icons: [{
-        src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0a0a"/><text y=".9em" font-size="80" x="10" fill="%23f5f5f5">⟳</text></svg>',
-        sizes: '192x192',
-        type: 'image/svg+xml'
-      }]
-    };
-    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = URL.createObjectURL(blob);
-    document.head.appendChild(link);
-  } catch(e) {}
-
-  validateForm();
-});
-</script>
+  </script>
 </body>
+
 </html>

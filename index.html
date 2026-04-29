@@ -1313,6 +1313,7 @@
     <button data-tab="track" class="active">Track</button>
     <button data-tab="history">History</button>
     <button data-tab="analytics">Analytics</button>
+    <button data-tab="guide">Guide</button>
     <button data-tab="settings">Settings</button>
   </nav>
 
@@ -1524,6 +1525,96 @@
   <!-- ============ ANALYTICS TAB ============ -->
   <section class="tab" id="tab-analytics">
     <div id="analyticsBody"></div>
+  </section>
+
+  <!-- ============ GUIDE TAB ============ -->
+  <section class="tab" id="tab-guide">
+    
+    <div class="settings-section">
+      <div class="settings-title">Core Fields</div>
+      <div class="note" style="margin-top:0; margin-bottom:16px;">The essential questions for every entry.</div>
+      
+      <dl class="detail-grid">
+        <dt>Stimulus</dt>
+        <dd>The trigger. What just happened to make you feel an urge?<br><em>Example: "felt bored at desk", "manager sent a vague message", "saw a donut"</em></dd>
+        
+        <dt>Thought</dt>
+        <dd>The story your mind is telling you right now to justify giving in.<br><em>Example: "I'll just check for 5 minutes", "I deserve a break", "I'll start my diet tomorrow"</em></dd>
+        
+        <dt>Urge intensity</dt>
+        <dd>How strong the physical craving feels right now.<br><em>1 = a passing thought, 5 = strong distraction, 10 = feels impossible to resist</em></dd>
+        
+        <dt>Action</dt>
+        <dd>What you actually did.<br><strong>Acted:</strong> You gave in and did the habit.<br><strong>Delayed:</strong> You waited 10 mins but eventually did it.<br><strong>Resisted:</strong> You fought it off entirely.<br><strong>Replaced:</strong> You drank water instead of snacking.</dd>
+        
+        <dt>Awareness</dt>
+        <dd>When you realized you were in a loop.<br><strong>Before:</strong> Caught the urge before doing the action.<br><strong>During:</strong> Halfway through scrolling, you realized you were doing it.<br><strong>After:</strong> 30 minutes later, you looked up and realized what happened.</dd>
+      </dl>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Expanded Fields — Stimulus & Thought</div>
+      
+      <dl class="detail-grid">
+        <dt>Stimulus Type</dt>
+        <dd><strong>Internal:</strong> A feeling from inside (e.g., stomach growl, sudden anxiety).<br><strong>External:</strong> Something from outside (e.g., phone buzzed, smelled pizza).</dd>
+        
+        <dt>Category</dt>
+        <dd><strong>Physiological:</strong> Body needs (tired, hungry).<br><strong>Emotional:</strong> Feelings (sad, stressed, lonely).<br><strong>Environmental:</strong> Surroundings (walked into the kitchen).<br><strong>Social:</strong> Other people (friends were drinking).<br><strong>Temporal:</strong> Time-based (it's 3 PM, time for coffee).</dd>
+        
+        <dt>Thought Type</dt>
+        <dd><strong>Impulse:</strong> "Do it right now!"<br><strong>Justification:</strong> "I worked hard, I earned this treat."<br><strong>Avoidance:</strong> "This task is too hard, I'll do it later."<br><strong>Emotional:</strong> "I feel terrible and this will make me feel better."</dd>
+      </dl>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Expanded Fields — Urge & Body</div>
+      
+      <dl class="detail-grid">
+        <dt>Urge Type</dt>
+        <dd><strong>Reward:</strong> Seeking pleasure (e.g., wanting sugar for the taste).<br><strong>Escape:</strong> Running from discomfort (e.g., scrolling to ignore a difficult work task).<br><strong>Relief:</strong> Calming down (e.g., biting nails due to anxiety).</dd>
+
+        <dt>Body State</dt>
+        <dd>Your physical battery levels.<br><em>Example: If Tension is 'High' and Energy is 'Low', you are highly vulnerable to seeking 'Escape' habits.</em></dd>
+        
+        <dt>Emotion</dt>
+        <dd>Name the exact feeling in your own words.<br><em>Example: "frustrated with code", "feeling rejected", "overwhelmed"</em></dd>
+      </dl>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Expanded Fields — Behavior & Outcome</div>
+      
+      <dl class="detail-grid">
+        <dt>Behavior Detail</dt>
+        <dd>Specifically what you did or what you wanted to do.<br><em>Example: "ate 4 cookies", "opened Twitter and scrolled for 25 minutes", "snapped at partner"</em></dd>
+        
+        <dt>Delay / Effort</dt>
+        <dd>How long you paused, and how hard it was.<br><em>Example: "Delayed 5s", "Effort: High" means you tried hard to stop but it was difficult.</em></dd>
+        
+        <dt>Immediate Outcome</dt>
+        <dd>How it felt in the exact moment of acting.<br><em>Example: 'Pleasure' (tasted good) or 'Relief' (stress faded temporarily).</em></dd>
+        
+        <dt>Post Outcome</dt>
+        <dd>How you feel 10-20 minutes later.<br><em>Example: 'Regret' (feel guilty), 'Continued craving' (want more), 'Satisfaction' (glad I did it).</em></dd>
+      </dl>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-title">Expanded Fields — Context & Reflection</div>
+      
+      <dl class="detail-grid">
+        <dt>Context</dt>
+        <dd>Where were you? (e.g., 'Work', 'Home'). Who with? (e.g., 'Alone'). Were screens involved? (e.g., 'Phone').</dd>
+        
+        <dt>Pattern</dt>
+        <dd>Have you repeated this exact loop today already? Is it a frequent habit?</dd>
+        
+        <dt>Reflection</dt>
+        <dd>Your note to your future self. What small, practical tweak could disrupt this loop next time?<br><em>Example: "When I feel stuck on code, physically stand up and walk away for 2 mins instead of opening Reddit."</em></dd>
+      </dl>
+    </div>
+
   </section>
 
   <!-- ============ SETTINGS TAB ============ -->

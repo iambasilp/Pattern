@@ -1509,15 +1509,32 @@
       <div class="note">Optional. Often easier to write a few minutes after the urge has passed than during it.</div>
     </div>
 
-    <button class="save-btn" id="saveBtn" disabled>Save entry</button>
+    <div id="formActions" style="display: flex; gap: 8px; margin-top: 32px;">
+      <button class="save-btn" id="saveBtn" style="margin-top: 0; flex: 1;" disabled>Save entry</button>
+      <button class="save-btn" id="cancelEditBtn" style="margin-top: 0; display: none; flex: 1; background: var(--surface-3); color: var(--text);">Cancel edit</button>
+    </div>
   </section>
 
   <!-- ============ HISTORY TAB ============ -->
   <section class="tab" id="tab-history">
     <div class="toolbar">
-      <button id="exportBtn">Export JSON</button>
+      <button id="exportBtn">Export</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <button id="importBtn">Import</button>
       <button id="clearBtn">Clear all</button>
     </div>
+    
+    <div class="history-filters" style="margin-bottom: 16px;">
+      <input type="text" id="historySearch" placeholder="Search entries (e.g. boredom, scrolled)..." style="margin-bottom: 8px;" autocomplete="off">
+      <div class="choice-row" id="historyFilterRow">
+        <button data-filter="all" class="selected">All</button>
+        <button data-filter="acted">Acted</button>
+        <button data-filter="resisted">Resisted</button>
+        <button data-filter="delayed">Delayed</button>
+        <button data-filter="replaced">Replaced</button>
+      </div>
+    </div>
+
     <div class="entries-count" id="entriesCount"></div>
     <div id="historyList"></div>
   </section>
@@ -1753,6 +1770,8 @@ function doGet(e) {
   <script>
     'use strict';
 
+    let currentEditId = null;
+
     // ============ STORAGE ============
     const STORAGE_KEY = 'blt_entries_v1';
 
@@ -1813,7 +1832,7 @@ function doGet(e) {
 
     // ============ CHOICE GROUPS ============
     function setupChoiceGroups() {
-      document.querySelectorAll('.choice-row').forEach(row => {
+      document.querySelectorAll('.choice-row[data-choice]').forEach(row => {
         const name = row.dataset.choice;
         row.querySelectorAll('button').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -1846,6 +1865,11 @@ function doGet(e) {
     }
 
     function clearForm() {
+      currentEditId = null;
+      document.getElementById('saveBtn').textContent = 'Save entry';
+      const cancelBtn = document.getElementById('cancelEditBtn');
+      if (cancelBtn) cancelBtn.style.display = 'none';
+
       document.getElementById('f_stimulus_label').value = '';
       document.getElementById('f_thought').value = '';
       document.getElementById('f_urge_intensity').value = 5;
@@ -1897,27 +1921,130 @@ function doGet(e) {
       };
 
       const entries = loadEntries();
-      entries.push(entry);
+      
+      if (currentEditId) {
+        const idx = entries.findIndex(e => e.id === currentEditId);
+        if (idx >= 0) {
+          const old = entries[idx];
+          entry.id = old.id;
+          entry.timestamp = old.timestamp;
+          entry.timestamp_ist = old.timestamp_ist;
+          entry.time_of_day = old.time_of_day;
+          entries[idx] = entry;
+        }
+      } else {
+        entries.push(entry);
+      }
+
       persist(entries);
 
-      syncToSheets(entry);
+      if (!currentEditId) syncToSheets(entry);
 
       clearForm();
       document.getElementById('expandedSection').classList.add('hidden');
       document.getElementById('toggleExpand').textContent = '+ Expand all fields';
 
-      toast('Entry saved · #' + entries.length);
+      toast(currentEditId ? 'Entry updated' : 'Entry saved · #' + entries.length);
+      currentEditId = null;
+      renderHistory(); // Refresh history tab
     }
 
     // ============ HISTORY ============
+    function loadEntryIntoForm(id) {
+      const entries = loadEntries();
+      const entry = entries.find(e => e.id === id);
+      if (!entry) return;
+      
+      currentEditId = id;
+      document.getElementById('f_stimulus_label').value = entry.stimulus_label || '';
+      document.getElementById('f_thought').value = entry.thought || '';
+      
+      document.getElementById('f_urge_intensity').value = entry.urge_intensity || 5;
+      document.getElementById('f_urge_intensity_val').textContent = entry.urge_intensity || 5;
+      
+      document.getElementById('f_hunger').value = entry.hunger || 5;
+      document.getElementById('f_hunger_val').textContent = entry.hunger || 5;
+      
+      document.getElementById('f_emotion').value = entry.emotion || '';
+      document.getElementById('f_behavior_detail').value = entry.behavior_detail || '';
+      document.getElementById('f_alternative').value = entry.alternative || '';
+      
+      document.querySelectorAll('.choice-row button.selected').forEach(b => b.classList.remove('selected'));
+      
+      const setChoice = (name, val) => {
+        if (val === null || val === undefined) return;
+        const btn = document.querySelector(`[data-choice="${name}"] button[data-value="${val}"]`);
+        if (btn) btn.classList.add('selected');
+      };
+      
+      setChoice('action_type', entry.action_type);
+      setChoice('awareness', entry.awareness);
+      setChoice('stimulus_type', entry.stimulus_type);
+      setChoice('stimulus_category', entry.stimulus_category);
+      setChoice('thought_type', entry.thought_type);
+      setChoice('urge_type', entry.urge_type);
+      setChoice('urge_duration', entry.urge_duration);
+      setChoice('energy', entry.energy);
+      setChoice('tension', entry.tension);
+      setChoice('fatigue', entry.fatigue === null ? null : String(entry.fatigue));
+      setChoice('behavior_category', entry.behavior_category);
+      setChoice('behavior_intensity', entry.behavior_intensity);
+      setChoice('delay', entry.delay);
+      setChoice('effort', entry.effort);
+      setChoice('outcome_immediate', entry.outcome_immediate);
+      setChoice('outcome_post', entry.outcome_post);
+      setChoice('location', entry.location);
+      setChoice('social', entry.social);
+      setChoice('device', entry.device);
+      setChoice('repeat_today', entry.repeat_today === null ? null : String(entry.repeat_today));
+      setChoice('frequency', entry.frequency);
+      
+      document.getElementById('saveBtn').textContent = 'Update entry';
+      const cancelBtn = document.getElementById('cancelEditBtn');
+      if (cancelBtn) cancelBtn.style.display = 'block';
+      
+      validateForm();
+      switchTab('track');
+      document.getElementById('expandedSection').classList.remove('hidden');
+      document.getElementById('toggleExpand').textContent = '− Hide expanded fields';
+      window.scrollTo(0, 0);
+      
+      toast('Editing entry');
+    }
+
     function renderHistory() {
-      const entries = loadEntries().slice().reverse();
+      const q = (document.getElementById('historySearch')?.value || '').toLowerCase().trim();
+      const filterBtn = document.querySelector('#historyFilterRow button.selected');
+      const filter = filterBtn ? filterBtn.dataset.filter : 'all';
+      
+      let allEntries = loadEntries().slice().reverse();
+      let entries = allEntries;
+      
+      if (filter !== 'all') {
+        entries = entries.filter(e => e.action_type === filter);
+      }
+      if (q) {
+        entries = entries.filter(e => 
+          (e.stimulus_label || '').toLowerCase().includes(q) ||
+          (e.thought || '').toLowerCase().includes(q) ||
+          (e.emotion || '').toLowerCase().includes(q) ||
+          (e.behavior_detail || '').toLowerCase().includes(q)
+        );
+      }
+
       const list = document.getElementById('historyList');
-      document.getElementById('entriesCount').textContent =
-        entries.length === 0 ? '' : entries.length + ' total ' + (entries.length === 1 ? 'entry' : 'entries');
+      const countLabel = entries.length === allEntries.length 
+        ? `${entries.length} total ${entries.length === 1 ? 'entry' : 'entries'}`
+        : `Showing ${entries.length} of ${allEntries.length}`;
+        
+      document.getElementById('entriesCount').textContent = allEntries.length === 0 ? '' : countLabel;
 
       if (entries.length === 0) {
-        list.innerHTML = '<div class="empty">No entries yet.<br>Track an urge to start.</div>';
+        if (allEntries.length > 0) {
+          list.innerHTML = '<div class="empty">No matching entries found.</div>';
+        } else {
+          list.innerHTML = '<div class="empty">No entries yet.<br>Track an urge to start.</div>';
+        }
         return;
       }
 
@@ -1964,15 +2091,25 @@ function doGet(e) {
             <div class="reflection-label">What could you do differently next time?</div>
             <div class="reflection-text ${e.alternative ? '' : 'empty'}" data-ref-id="${e.id}">${e.alternative ? esc(e.alternative) : 'Not added yet — tap to add'}</div>
           </div>
-          <button class="delete-btn" data-del="${e.id}">Delete entry</button>
+          <div style="display:flex; gap: 8px;">
+            <button class="delete-btn" data-edit="${e.id}" style="flex:1;">Edit entry</button>
+            <button class="delete-btn" data-del="${e.id}" style="flex:1;">Delete entry</button>
+          </div>
         </div>
       </div>`;
       }).join('');
 
       list.querySelectorAll('.entry').forEach(el => {
         el.addEventListener('click', ev => {
-          if (ev.target.matches('[data-del]')) return;
+          if (ev.target.matches('button') || ev.target.matches('[data-ref-id]')) return;
           el.querySelector('.entry-detail').classList.toggle('open');
+        });
+      });
+
+      list.querySelectorAll('[data-edit]').forEach(btn => {
+        btn.addEventListener('click', ev => {
+          ev.stopPropagation();
+          loadEntryIntoForm(btn.dataset.edit);
         });
       });
 
@@ -1994,6 +2131,7 @@ function doGet(e) {
         });
       });
     }
+
 
     function openReflectionEditor(el) {
       const id = el.dataset.refId;
@@ -2390,6 +2528,14 @@ function doGet(e) {
       });
 
       document.getElementById('saveBtn').addEventListener('click', saveEntry);
+      
+      const cancelBtn = document.getElementById('cancelEditBtn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          clearForm();
+          toast('Edit cancelled');
+        });
+      }
 
       document.querySelectorAll('nav button').forEach(b => {
         b.addEventListener('click', () => switchTab(b.dataset.tab));
@@ -2397,6 +2543,56 @@ function doGet(e) {
 
       document.getElementById('exportBtn').addEventListener('click', exportData);
       document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+      // JSON Import
+      document.getElementById('importBtn').addEventListener('click', () => {
+        document.getElementById('importFile').click();
+      });
+      document.getElementById('importFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          try {
+            const data = JSON.parse(evt.target.result);
+            if (Array.isArray(data)) {
+               const existing = loadEntries();
+               const existingIds = new Set(existing.map(ex => ex.id));
+               let added = 0;
+               data.forEach(item => {
+                 if (!existingIds.has(item.id) && item.id && item.timestamp) {
+                   existing.push(item);
+                   added++;
+                 }
+               });
+               existing.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+               persist(existing);
+               renderHistory();
+               toast(`Imported ${added} new entries`);
+            } else {
+               toast('Invalid JSON format');
+            }
+          } catch (err) {
+            toast('Failed to read file');
+          }
+          e.target.value = '';
+        };
+        reader.readAsText(file);
+      });
+
+      // History Search & Filter
+      const hs = document.getElementById('historySearch');
+      if (hs) {
+        hs.addEventListener('input', () => renderHistory());
+      }
+      
+      document.querySelectorAll('#historyFilterRow button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#historyFilterRow button').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          renderHistory();
+        });
+      });
 
       // Theme toggle — purely additive, no existing logic affected
       document.getElementById('themeToggle').addEventListener('click', () => {

@@ -1310,228 +1310,228 @@
   </header>
 
   <nav>
-    <button data-tab="track" class="active">Track</button>
-    <button data-tab="history">History</button>
-    <button data-tab="analytics">Analytics</button>
-    <button data-tab="guide">Guide</button>
-    <button data-tab="settings">Settings</button>
+    <button data-tab="track" class="active" data-i18n="nav_track">Track</button>
+    <button data-tab="history" data-i18n="nav_history">History</button>
+    <button data-tab="analytics" data-i18n="nav_analytics">Analytics</button>
+    <button data-tab="guide" data-i18n="nav_guide">Guide</button>
+    <button data-tab="settings" data-i18n="nav_settings">Settings</button>
   </nav>
 
   <!-- ============ TRACK TAB ============ -->
   <section class="tab active" id="tab-track">
 
-    <label>Stimulus — what triggered this?</label>
+    <label data-i18n="lbl_stimulus">Stimulus — what triggered this?</label>
     <input type="text" id="f_stimulus_label" placeholder="e.g. boredom, opened fridge, manager pinged me"
       autocomplete="off">
 
-    <label>Thought — what did your mind say?</label>
+    <label data-i18n="lbl_thought">Thought — what did your mind say?</label>
     <textarea id="f_thought" placeholder="e.g. just 2 mins, i deserve this, i'll start tomorrow"></textarea>
 
-    <label>Urge intensity (1–10)</label>
+    <label data-i18n="lbl_urge_intensity">Urge intensity (1–10)</label>
     <div class="range-wrap">
       <input type="range" id="f_urge_intensity" min="1" max="10" value="5">
       <span class="range-val" id="f_urge_intensity_val">5</span>
     </div>
 
-    <label>Action</label>
+    <label data-i18n="lbl_action">Action</label>
     <div class="choice-row" data-choice="action_type">
-      <button data-value="acted">Acted</button>
-      <button data-value="delayed">Delayed</button>
-      <button data-value="resisted">Resisted</button>
-      <button data-value="replaced">Replaced</button>
+      <button data-value="acted" data-i18n="val_acted">Acted</button>
+      <button data-value="delayed" data-i18n="val_delayed">Delayed</button>
+      <button data-value="resisted" data-i18n="val_resisted">Resisted</button>
+      <button data-value="replaced" data-i18n="val_replaced">Replaced</button>
     </div>
 
-    <label>Awareness — when did you notice?</label>
+    <label data-i18n="lbl_awareness">Awareness — when did you notice?</label>
     <div class="choice-row" data-choice="awareness">
-      <button data-value="before">Before</button>
-      <button data-value="during">During</button>
-      <button data-value="after">After</button>
+      <button data-value="before" data-i18n="val_before">Before</button>
+      <button data-value="during" data-i18n="val_during">During</button>
+      <button data-value="after" data-i18n="val_after">After</button>
     </div>
 
-    <button class="toggle-expand" id="toggleExpand">+ Expand all fields</button>
+    <button class="toggle-expand" id="toggleExpand" data-i18n="btn_expand">+ Expand all fields</button>
 
     <div class="expanded-section hidden" id="expandedSection">
 
-      <div class="section-title">Stimulus</div>
-      <label>Type</label>
+      <div class="section-title" data-i18n="sec_stimulus">Stimulus</div>
+      <label data-i18n="lbl_type">Type</label>
       <div class="choice-row" data-choice="stimulus_type">
-        <button data-value="internal">Internal</button>
-        <button data-value="external">External</button>
+        <button data-value="internal" data-i18n="val_internal">Internal</button>
+        <button data-value="external" data-i18n="val_external">External</button>
       </div>
-      <label>Category</label>
+      <label data-i18n="lbl_category">Category</label>
       <div class="choice-row" data-choice="stimulus_category">
-        <button data-value="physiological">Physiological</button>
-        <button data-value="emotional">Emotional</button>
-        <button data-value="environmental">Environmental</button>
-        <button data-value="social">Social</button>
-        <button data-value="temporal">Temporal</button>
+        <button data-value="physiological" data-i18n="val_physiological">Physiological</button>
+        <button data-value="emotional" data-i18n="val_emotional">Emotional</button>
+        <button data-value="environmental" data-i18n="val_environmental">Environmental</button>
+        <button data-value="social" data-i18n="val_social">Social</button>
+        <button data-value="temporal" data-i18n="val_temporal">Temporal</button>
       </div>
 
-      <div class="section-title">Thought</div>
-      <label>Thought type</label>
+      <div class="section-title" data-i18n="sec_thought">Thought</div>
+      <label data-i18n="lbl_thought_type">Thought type</label>
       <div class="choice-row" data-choice="thought_type">
-        <button data-value="impulse">Impulse</button>
-        <button data-value="justification">Justification</button>
-        <button data-value="avoidance">Avoidance</button>
-        <button data-value="emotional_reasoning">Emotional reasoning</button>
+        <button data-value="impulse" data-i18n="val_impulse">Impulse</button>
+        <button data-value="justification" data-i18n="val_justification">Justification</button>
+        <button data-value="avoidance" data-i18n="val_avoidance">Avoidance</button>
+        <button data-value="emotional_reasoning" data-i18n="val_emotional_reasoning">Emotional reasoning</button>
       </div>
 
-      <div class="section-title">Urge</div>
-      <label>Urge type</label>
+      <div class="section-title" data-i18n="sec_urge">Urge</div>
+      <label data-i18n="lbl_urge_type">Urge type</label>
       <div class="choice-row" data-choice="urge_type">
-        <button data-value="reward">Reward</button>
-        <button data-value="escape">Escape</button>
-        <button data-value="relief">Relief</button>
+        <button data-value="reward" data-i18n="val_reward">Reward</button>
+        <button data-value="escape" data-i18n="val_escape">Escape</button>
+        <button data-value="relief" data-i18n="val_relief">Relief</button>
       </div>
-      <label>Duration</label>
+      <label data-i18n="lbl_duration">Duration</label>
       <div class="choice-row" data-choice="urge_duration">
-        <button data-value="short">Short</button>
-        <button data-value="medium">Medium</button>
-        <button data-value="long">Long</button>
+        <button data-value="short" data-i18n="val_short">Short</button>
+        <button data-value="medium" data-i18n="val_medium">Medium</button>
+        <button data-value="long" data-i18n="val_long">Long</button>
       </div>
 
-      <div class="section-title">Body</div>
-      <label>Hunger (1–10)</label>
+      <div class="section-title" data-i18n="sec_body">Body</div>
+      <label data-i18n="lbl_hunger">Hunger (1–10)</label>
       <div class="range-wrap">
         <input type="range" id="f_hunger" min="1" max="10" value="5">
         <span class="range-val" id="f_hunger_val">5</span>
       </div>
-      <label>Energy</label>
+      <label data-i18n="lbl_energy">Energy</label>
       <div class="choice-row" data-choice="energy">
-        <button data-value="low">Low</button>
-        <button data-value="normal">Normal</button>
-        <button data-value="high">High</button>
+        <button data-value="low" data-i18n="val_low">Low</button>
+        <button data-value="normal" data-i18n="val_normal">Normal</button>
+        <button data-value="high" data-i18n="val_high">High</button>
       </div>
-      <label>Tension</label>
+      <label data-i18n="lbl_tension">Tension</label>
       <div class="choice-row" data-choice="tension">
-        <button data-value="low">Low</button>
-        <button data-value="medium">Medium</button>
-        <button data-value="high">High</button>
+        <button data-value="low" data-i18n="val_low">Low</button>
+        <button data-value="medium" data-i18n="val_medium">Medium</button>
+        <button data-value="high" data-i18n="val_high">High</button>
       </div>
-      <label>Fatigue</label>
+      <label data-i18n="lbl_fatigue">Fatigue</label>
       <div class="choice-row" data-choice="fatigue">
-        <button data-value="true">Yes</button>
-        <button data-value="false">No</button>
+        <button data-value="true" data-i18n="val_yes">Yes</button>
+        <button data-value="false" data-i18n="val_no">No</button>
       </div>
 
-      <div class="section-title">Emotion</div>
-      <label>Emotion (free text)</label>
+      <div class="section-title" data-i18n="sec_emotion">Emotion</div>
+      <label data-i18n="lbl_emotion">Emotion (free text)</label>
       <input type="text" id="f_emotion" placeholder="e.g. anxious, restless, lonely, frustrated" autocomplete="off">
 
-      <div class="section-title">Behavior</div>
-      <label>Behavior category</label>
+      <div class="section-title" data-i18n="sec_behavior">Behavior</div>
+      <label data-i18n="lbl_behavior_cat">Behavior category</label>
       <div class="choice-row" data-choice="behavior_category">
-        <button data-value="eating">Eating</button>
-        <button data-value="scrolling">Scrolling</button>
-        <button data-value="avoidance">Avoidance</button>
-        <button data-value="anger">Anger</button>
-        <button data-value="social">Social</button>
-        <button data-value="substance">Substance</button>
+        <button data-value="eating" data-i18n="val_eating">Eating</button>
+        <button data-value="scrolling" data-i18n="val_scrolling">Scrolling</button>
+        <button data-value="avoidance" data-i18n="val_avoidance_beh">Avoidance</button>
+        <button data-value="anger" data-i18n="val_anger">Anger</button>
+        <button data-value="social" data-i18n="val_social_beh">Social</button>
+        <button data-value="substance" data-i18n="val_substance">Substance</button>
       </div>
-      <label>Behavior detail</label>
+      <label data-i18n="lbl_behavior_detail">Behavior detail</label>
       <input type="text" id="f_behavior_detail"
         placeholder="e.g. instagram reels for 35 mins, ate 2 packets of biscuits" autocomplete="off">
-      <label>Intensity</label>
+      <label data-i18n="lbl_intensity">Intensity</label>
       <div class="choice-row" data-choice="behavior_intensity">
-        <button data-value="low">Low</button>
-        <button data-value="medium">Medium</button>
-        <button data-value="high">High</button>
-        <button data-value="extreme">Extreme</button>
+        <button data-value="low" data-i18n="val_low">Low</button>
+        <button data-value="medium" data-i18n="val_medium">Medium</button>
+        <button data-value="high" data-i18n="val_high">High</button>
+        <button data-value="extreme" data-i18n="val_extreme">Extreme</button>
       </div>
 
-      <div class="section-title">Response</div>
-      <label>Delay before acting</label>
+      <div class="section-title" data-i18n="sec_response">Response</div>
+      <label data-i18n="lbl_delay">Delay before acting</label>
       <div class="choice-row" data-choice="delay">
-        <button data-value="0s">0s</button>
-        <button data-value="5s">5s</button>
-        <button data-value="30s">30s</button>
-        <button data-value="2m+">2m+</button>
+        <button data-value="0s" data-i18n="val_0s">0s</button>
+        <button data-value="5s" data-i18n="val_5s">5s</button>
+        <button data-value="30s" data-i18n="val_30s">30s</button>
+        <button data-value="2m+" data-i18n="val_2m_plus">2m+</button>
       </div>
-      <label>Effort to resist</label>
+      <label data-i18n="lbl_effort">Effort to resist</label>
       <div class="choice-row" data-choice="effort">
-        <button data-value="none">None</button>
-        <button data-value="low">Low</button>
-        <button data-value="high">High</button>
+        <button data-value="none" data-i18n="val_none">None</button>
+        <button data-value="low" data-i18n="val_low">Low</button>
+        <button data-value="high" data-i18n="val_high">High</button>
       </div>
 
-      <div class="section-title">Outcome</div>
-      <label>Immediate outcome</label>
+      <div class="section-title" data-i18n="sec_outcome">Outcome</div>
+      <label data-i18n="lbl_immediate_outcome">Immediate outcome</label>
       <div class="choice-row" data-choice="outcome_immediate">
-        <button data-value="pleasure">Pleasure</button>
-        <button data-value="relief">Relief</button>
-        <button data-value="neutral">Neutral</button>
-        <button data-value="discomfort">Discomfort</button>
+        <button data-value="pleasure" data-i18n="val_pleasure">Pleasure</button>
+        <button data-value="relief" data-i18n="val_relief">Relief</button>
+        <button data-value="neutral" data-i18n="val_neutral">Neutral</button>
+        <button data-value="discomfort" data-i18n="val_discomfort">Discomfort</button>
       </div>
-      <label>Post outcome (after a few minutes)</label>
+      <label data-i18n="lbl_post_outcome">Post outcome (after a few minutes)</label>
       <div class="choice-row" data-choice="outcome_post">
-        <button data-value="satisfaction">Satisfaction</button>
-        <button data-value="regret">Regret</button>
-        <button data-value="continued_craving">Continued craving</button>
-        <button data-value="none">None</button>
+        <button data-value="satisfaction" data-i18n="val_satisfaction">Satisfaction</button>
+        <button data-value="regret" data-i18n="val_regret">Regret</button>
+        <button data-value="continued_craving" data-i18n="val_continued_craving">Continued craving</button>
+        <button data-value="none" data-i18n="val_none">None</button>
       </div>
 
-      <div class="section-title">Context</div>
+      <div class="section-title" data-i18n="sec_context">Context</div>
       <div class="note">Time of day is captured automatically.</div>
-      <label>Location</label>
+      <label data-i18n="lbl_location">Location</label>
       <div class="choice-row" data-choice="location">
-        <button data-value="home">Home</button>
-        <button data-value="work">Work</button>
-        <button data-value="outside">Outside</button>
+        <button data-value="home" data-i18n="val_home">Home</button>
+        <button data-value="work" data-i18n="val_work">Work</button>
+        <button data-value="outside" data-i18n="val_outside">Outside</button>
       </div>
-      <label>Social</label>
+      <label data-i18n="lbl_social">Social</label>
       <div class="choice-row" data-choice="social">
-        <button data-value="alone">Alone</button>
-        <button data-value="with_others">With others</button>
+        <button data-value="alone" data-i18n="val_alone">Alone</button>
+        <button data-value="with_others" data-i18n="val_with_others">With others</button>
       </div>
-      <label>Device involved</label>
+      <label data-i18n="lbl_device">Device involved</label>
       <div class="choice-row" data-choice="device">
-        <button data-value="phone">Phone</button>
-        <button data-value="none">None</button>
+        <button data-value="phone" data-i18n="val_phone">Phone</button>
+        <button data-value="none" data-i18n="val_none">None</button>
       </div>
 
-      <div class="section-title">Pattern</div>
-      <label>Repeated this today already?</label>
+      <div class="section-title" data-i18n="sec_pattern">Pattern</div>
+      <label data-i18n="lbl_repeat_today">Repeated this today already?</label>
       <div class="choice-row" data-choice="repeat_today">
-        <button data-value="true">Yes</button>
-        <button data-value="false">No</button>
+        <button data-value="true" data-i18n="val_yes">Yes</button>
+        <button data-value="false" data-i18n="val_no">No</button>
       </div>
-      <label>How often does this loop run?</label>
+      <label data-i18n="lbl_frequency">How often does this loop run?</label>
       <div class="choice-row" data-choice="frequency">
-        <button data-value="rare">Rare</button>
-        <button data-value="occasional">Occasional</button>
-        <button data-value="frequent">Frequent</button>
+        <button data-value="rare" data-i18n="val_rare">Rare</button>
+        <button data-value="occasional" data-i18n="val_occasional">Occasional</button>
+        <button data-value="frequent" data-i18n="val_frequent">Frequent</button>
       </div>
 
-      <div class="section-title">Reflection</div>
-      <label>What could you do differently next time?</label>
+      <div class="section-title" data-i18n="sec_reflection">Reflection</div>
+      <label data-i18n="lbl_reflection">What could you do differently next time?</label>
       <textarea id="f_alternative"
         placeholder="e.g. step away from the desk for 2 mins, drink water, name the boredom and wait 60s before reaching for the phone"></textarea>
       <div class="note">Optional. Often easier to write a few minutes after the urge has passed than during it.</div>
     </div>
 
     <div id="formActions" style="display: flex; gap: 8px; margin-top: 32px;">
-      <button class="save-btn" id="saveBtn" style="margin-top: 0; flex: 1;" disabled>Save entry</button>
-      <button class="save-btn" id="cancelEditBtn" style="margin-top: 0; display: none; flex: 1; background: var(--surface-3); color: var(--text);">Cancel edit</button>
+      <button class="save-btn" id="saveBtn" style="margin-top: 0; flex: 1;" disabled data-i18n="btn_save">Save entry</button>
+      <button class="save-btn" id="cancelEditBtn" style="margin-top: 0; display: none; flex: 1; background: var(--surface-3); color: var(--text);" data-i18n="btn_cancel">Cancel edit</button>
     </div>
   </section>
 
   <!-- ============ HISTORY TAB ============ -->
   <section class="tab" id="tab-history">
     <div class="toolbar">
-      <button id="exportBtn">Export</button>
+      <button id="exportBtn" data-i18n="tab_history_export">Export</button>
       <input type="file" id="importFile" accept=".json" style="display:none">
-      <button id="importBtn">Import</button>
-      <button id="clearBtn">Clear all</button>
+      <button id="importBtn" data-i18n="tab_history_import">Import</button>
+      <button id="clearBtn" data-i18n="tab_history_clear">Clear all</button>
     </div>
     
     <div class="history-filters" style="margin-bottom: 16px;">
       <input type="text" id="historySearch" placeholder="Search entries (e.g. boredom, scrolled)..." style="margin-bottom: 8px;" autocomplete="off">
       <div class="choice-row" id="historyFilterRow">
-        <button data-filter="all" class="selected">All</button>
-        <button data-filter="acted">Acted</button>
-        <button data-filter="resisted">Resisted</button>
-        <button data-filter="delayed">Delayed</button>
-        <button data-filter="replaced">Replaced</button>
+        <button data-filter="all" class="selected" data-i18n="val_all">All</button>
+        <button data-filter="acted" data-i18n="val_acted">Acted</button>
+        <button data-filter="resisted" data-i18n="val_resisted">Resisted</button>
+        <button data-filter="delayed" data-i18n="val_delayed">Delayed</button>
+        <button data-filter="replaced" data-i18n="val_replaced">Replaced</button>
       </div>
     </div>
 
@@ -1636,6 +1636,17 @@
 
   <!-- ============ SETTINGS TAB ============ -->
   <section class="tab" id="tab-settings">
+
+    <div class="settings-section">
+      <div class="settings-title" data-i18n="settings_language">Language</div>
+      <label data-i18n="lbl_lang_select">Select Language</label>
+      <select id="langSelect" style="margin-bottom: 0;">
+        <option value="en">English</option>
+        <option value="ml">മലയാളം (Malayalam)</option>
+        <option value="hi">हिंदी (Hindi)</option>
+        <option value="ar">العربية (Arabic)</option>
+      </select>
+    </div>
 
     <div class="settings-section">
       <div class="settings-title">Google Sheets sync</div>
@@ -1771,6 +1782,202 @@ function doGet(e) {
     'use strict';
 
     let currentEditId = null;
+
+    let currentLang = localStorage.getItem('blt_lang') || 'en';
+    
+const translations = {
+  en: {
+    nav_track: "Track", nav_history: "History", nav_analytics: "Analytics", nav_guide: "Guide", nav_settings: "Settings",
+    lbl_stimulus: "Stimulus — what triggered this?",
+    lbl_thought: "Thought — what did your mind say?",
+    lbl_urge_intensity: "Urge intensity (1–10)",
+    lbl_action: "Action",
+    lbl_awareness: "Awareness — when did you notice?",
+    btn_expand: "+ Expand all fields",
+    btn_collapse: "− Hide expanded fields",
+    sec_stimulus: "Stimulus", lbl_type: "Type", lbl_category: "Category",
+    sec_thought: "Thought", lbl_thought_type: "Thought type",
+    sec_urge: "Urge", lbl_urge_type: "Urge type", lbl_duration: "Duration",
+    sec_body: "Body", lbl_hunger: "Hunger (1–10)", lbl_energy: "Energy", lbl_tension: "Tension", lbl_fatigue: "Fatigue",
+    sec_emotion: "Emotion", lbl_emotion: "Emotion (free text)",
+    sec_behavior: "Behavior", lbl_behavior_cat: "Behavior category", lbl_behavior_detail: "Behavior detail", lbl_intensity: "Intensity",
+    sec_response: "Response", lbl_delay: "Delay before acting", lbl_effort: "Effort to resist",
+    sec_outcome: "Outcome", lbl_immediate_outcome: "Immediate outcome", lbl_post_outcome: "Post outcome (after a few minutes)",
+    sec_context: "Context", lbl_location: "Location", lbl_social: "Social", lbl_device: "Device involved",
+    sec_pattern: "Pattern", lbl_repeat_today: "Repeated this today already?", lbl_frequency: "How often does this loop run?",
+    sec_reflection: "Reflection", lbl_reflection: "What could you do differently next time?",
+    btn_save: "Save entry", btn_update: "Update entry", btn_cancel: "Cancel edit",
+    val_acted: "Acted", val_delayed: "Delayed", val_resisted: "Resisted", val_replaced: "Replaced",
+    val_before: "Before", val_during: "During", val_after: "After",
+    val_internal: "Internal", val_external: "External",
+    val_physiological: "Physiological", val_emotional: "Emotional", val_environmental: "Environmental", val_social: "Social", val_temporal: "Temporal",
+    val_impulse: "Impulse", val_justification: "Justification", val_avoidance: "Avoidance", val_emotional_reasoning: "Emotional reasoning",
+    val_reward: "Reward", val_escape: "Escape", val_relief: "Relief",
+    val_short: "Short", val_medium: "Medium", val_long: "Long",
+    val_low: "Low", val_normal: "Normal", val_high: "High", val_extreme: "Extreme",
+    val_yes: "Yes", val_no: "No",
+    val_eating: "Eating", val_scrolling: "Scrolling", val_avoidance_beh: "Avoidance", val_anger: "Anger", val_social_beh: "Social", val_substance: "Substance",
+    val_0s: "0s", val_5s: "5s", val_30s: "30s", val_2m_plus: "2m+",
+    val_none: "None",
+    val_pleasure: "Pleasure", val_neutral: "Neutral", val_discomfort: "Discomfort",
+    val_satisfaction: "Satisfaction", val_regret: "Regret", val_continued_craving: "Continued craving",
+    val_home: "Home", val_work: "Work", val_outside: "Outside",
+    val_alone: "Alone", val_with_others: "With others",
+    val_phone: "Phone",
+    val_rare: "Rare", val_occasional: "Occasional", val_frequent: "Frequent",
+    tab_history_export: "Export", tab_history_import: "Import", tab_history_clear: "Clear all",
+    tab_history_search: "Search entries...", val_all: "All",
+    toast_saved: "Entry saved", toast_updated: "Entry updated", toast_deleted: "Entry deleted", toast_cancelled: "Edit cancelled",
+    settings_language: "Language", lbl_lang_select: "Select Language"
+  },
+  ml: {
+    nav_track: "ട്രാക്ക്", nav_history: "ചരിത്രം", nav_analytics: "വിശകലനം", nav_guide: "വഴികാട്ടി", nav_settings: "ക്രമീകരണങ്ങൾ",
+    lbl_stimulus: "പ്രചോദനം — എന്താണ് ഇതിന് കാരണമായത്?",
+    lbl_thought: "ചിന്ത — നിങ്ങളുടെ മനസ്സ് എന്താണ് പറഞ്ഞത്?",
+    lbl_urge_intensity: "പ്രേരണയുടെ തീവ്രത (1–10)",
+    lbl_action: "പ്രവൃത്തി",
+    lbl_awareness: "അവബോധം — നിങ്ങൾ എപ്പോഴാണ് ശ്രദ്ധിച്ചത്?",
+    btn_expand: "+ എല്ലാ ഫീൽഡുകളും വികസിപ്പിക്കുക",
+    btn_collapse: "− വിപുലീകരിച്ച ഫീൽഡുകൾ മറയ്ക്കുക",
+    sec_stimulus: "പ്രചോദനം", lbl_type: "തരം", lbl_category: "വിഭാഗം",
+    sec_thought: "ചിന്ത", lbl_thought_type: "ചിന്തയുടെ തരം",
+    sec_urge: "പ്രേരണ", lbl_urge_type: "പ്രേരണയുടെ തരം", lbl_duration: "ദൈർഘ്യം",
+    sec_body: "ശരീരം", lbl_hunger: "വിശപ്പ് (1–10)", lbl_energy: "ഊർജ്ജം", lbl_tension: "സമ്മർദ്ദം", lbl_fatigue: "ക്ഷീണം",
+    sec_emotion: "വികാരം", lbl_emotion: "വികാരം (എഴുതുക)",
+    sec_behavior: "പെരുമാറ്റം", lbl_behavior_cat: "പെരുമാറ്റ വിഭാഗം", lbl_behavior_detail: "പെരുമാറ്റ വിശദാംശങ്ങൾ", lbl_intensity: "തീവ്രത",
+    sec_response: "പ്രതികരണം", lbl_delay: "പ്രവർത്തിക്കുന്നതിന് മുമ്പുള്ള കാലതാമസം", lbl_effort: "ചെറുത്തുനിൽക്കാനുള്ള ശ്രമം",
+    sec_outcome: "ഫലം", lbl_immediate_outcome: "ഉടനടിയുള്ള ഫലം", lbl_post_outcome: "ശേഷമുള്ള ഫലം (കുറച്ച് മിനിറ്റുകൾക്ക് ശേഷം)",
+    sec_context: "സാഹചര്യം", lbl_location: "സ്ഥലം", lbl_social: "സാമൂഹികം", lbl_device: "ഉപകരണം",
+    sec_pattern: "മാതൃക", lbl_repeat_today: "ഇന്ന് ഇത് ആവർത്തിച്ചോ?", lbl_frequency: "ഇത് എത്ര തവണ സംഭവിക്കുന്നു?",
+    sec_reflection: "ചിന്തനം", lbl_reflection: "അടുത്ത തവണ നിങ്ങൾക്ക് വ്യത്യസ്തമായി എന്തുചെയ്യാൻ കഴിയും?",
+    btn_save: "സേവ് ചെയ്യുക", btn_update: "അപ്ഡേറ്റ് ചെയ്യുക", btn_cancel: "റദ്ദാക്കുക",
+    val_acted: "പ്രവർത്തിച്ചു", val_delayed: "വൈകിപ്പിച്ചു", val_resisted: "ചെറുത്തുനിന്നു", val_replaced: "മാറ്റിസ്ഥാപിച്ചു",
+    val_before: "മുമ്പ്", val_during: "സമയത്ത്", val_after: "ശേഷം",
+    val_internal: "ആന്തരികം", val_external: "ബാഹ്യം",
+    val_physiological: "ശാരീരികം", val_emotional: "വൈകാരികം", val_environmental: "പാരിസ്ഥിതികം", val_social: "സാമൂഹികം", val_temporal: "താൽക്കാലികം",
+    val_impulse: "പ്രേരണ", val_justification: "ന്യായീകരണം", val_avoidance: "ഒഴിവാക്കൽ", val_emotional_reasoning: "വൈകാരിക യുക്തി",
+    val_reward: "പ്രതിഫലം", val_escape: "രക്ഷപ്പെടൽ", val_relief: "ആശ്വാസം",
+    val_short: "ചെറുത്", val_medium: "ഇടത്തരം", val_long: "ദീർഘം",
+    val_low: "കുറവ്", val_normal: "സാധാരണം", val_high: "കൂടുതൽ", val_extreme: "വളരെ കൂടുതൽ",
+    val_yes: "അതെ", val_no: "അല്ല",
+    val_eating: "ഭക്ഷണം", val_scrolling: "സ്ക്രോളിംഗ്", val_avoidance_beh: "ഒഴിവാക്കൽ", val_anger: "ദേഷ്യം", val_social_beh: "സാമൂഹികം", val_substance: "ലഹരി",
+    val_0s: "0s", val_5s: "5s", val_30s: "30s", val_2m_plus: "2m+",
+    val_none: "ഒന്നുമില്ല",
+    val_pleasure: "സന്തോഷം", val_neutral: "നിഷ്പക്ഷം", val_discomfort: "അസ്വസ്ഥത",
+    val_satisfaction: "സംതൃപ്തി", val_regret: "ഖേദം", val_continued_craving: "തുടർച്ചയായ ആസക്തി",
+    val_home: "വീട്", val_work: "ജോലിസ്ഥലം", val_outside: "പുറത്ത്",
+    val_alone: "തനിച്ചു", val_with_others: "മറ്റുള്ളവരുടെ കൂടെ",
+    val_phone: "ഫോൺ",
+    val_rare: "അപൂർവ്വം", val_occasional: "ഇടയ്ക്കിടെ", val_frequent: "പലപ്പോഴും",
+    tab_history_export: "എക്സ്പോർട്ട്", tab_history_import: "ഇമ്പോർട്ട്", tab_history_clear: "എല്ലാം മായ്ക്കുക",
+    tab_history_search: "തിരയുക...", val_all: "എല്ലാം",
+    toast_saved: "സേവ് ചെയ്തു", toast_updated: "അപ്ഡേറ്റ് ചെയ്തു", toast_deleted: "മായ്ച്ചു", toast_cancelled: "റദ്ദാക്കി",
+    settings_language: "ഭാഷ", lbl_lang_select: "ഭാഷ തിരഞ്ഞെടുക്കുക"
+  },
+  hi: {
+    nav_track: "ट्रैक", nav_history: "इतिहास", nav_analytics: "विश्लेषण", nav_guide: "गाइड", nav_settings: "सेटिंग्स",
+    lbl_stimulus: "उत्तेजना — इसका कारण क्या था?",
+    lbl_thought: "विचार — आपके दिमाग ने क्या कहा?",
+    lbl_urge_intensity: "इच्छा की तीव्रता (1–10)",
+    lbl_action: "कार्रवाई",
+    lbl_awareness: "जागरूकता — आपने कब ध्यान दिया?",
+    btn_expand: "+ सभी फ़ील्ड दिखाएं",
+    btn_collapse: "− फ़ील्ड छिपाएं",
+    sec_stimulus: "उत्तेजना", lbl_type: "प्रकार", lbl_category: "श्रेणी",
+    sec_thought: "विचार", lbl_thought_type: "विचार का प्रकार",
+    sec_urge: "इच्छा", lbl_urge_type: "इच्छा का प्रकार", lbl_duration: "अवधि",
+    sec_body: "शरीर", lbl_hunger: "भूख (1–10)", lbl_energy: "ऊर्जा", lbl_tension: "तनाव", lbl_fatigue: "थकान",
+    sec_emotion: "भावना", lbl_emotion: "भावना (लिखें)",
+    sec_behavior: "व्यवहार", lbl_behavior_cat: "व्यवहार श्रेणी", lbl_behavior_detail: "व्यवहार विवरण", lbl_intensity: "तीव्रता",
+    sec_response: "प्रतिक्रिया", lbl_delay: "कार्रवाई से पहले देरी", lbl_effort: "विरोध करने का प्रयास",
+    sec_outcome: "परिणाम", lbl_immediate_outcome: "तत्काल परिणाम", lbl_post_outcome: "बाद का परिणाम (कुछ मिनटों के बाद)",
+    sec_context: "संदर्भ", lbl_location: "स्थान", lbl_social: "सामाजिक", lbl_device: "उपकरण",
+    sec_pattern: "पैटर्न", lbl_repeat_today: "क्या आज इसे दोहराया?", lbl_frequency: "यह कितनी बार होता है?",
+    sec_reflection: "प्रतिबिंब", lbl_reflection: "अगली बार आप अलग ढंग से क्या कर सकते हैं?",
+    btn_save: "सेव करें", btn_update: "अपडेट करें", btn_cancel: "रद्द करें",
+    val_acted: "कार्रवाई की", val_delayed: "देरी की", val_resisted: "विरोध किया", val_replaced: "बदल दिया",
+    val_before: "पहले", val_during: "दौरान", val_after: "बाद में",
+    val_internal: "आंतरिक", val_external: "बाहरी",
+    val_physiological: "शारीरिक", val_emotional: "भावनात्मक", val_environmental: "पर्यावरणीय", val_social: "सामाजिक", val_temporal: "अस्थायी",
+    val_impulse: "आवेग", val_justification: "औचित्य", val_avoidance: "बचना", val_emotional_reasoning: "भावनात्मक तर्क",
+    val_reward: "इनाम", val_escape: "बचना", val_relief: "राहत",
+    val_short: "छोटा", val_medium: "मध्यम", val_long: "लंबा",
+    val_low: "कम", val_normal: "सामान्य", val_high: "अधिक", val_extreme: "अत्यधिक",
+    val_yes: "हाँ", val_no: "नहीं",
+    val_eating: "भोजन", val_scrolling: "स्क्रॉलिंग", val_avoidance_beh: "बचना", val_anger: "क्रोध", val_social_beh: "सामाजिक", val_substance: "नशा",
+    val_0s: "0s", val_5s: "5s", val_30s: "30s", val_2m_plus: "2m+",
+    val_none: "कोई नहीं",
+    val_pleasure: "आनंद", val_neutral: "तटस्थ", val_discomfort: "असुविधा",
+    val_satisfaction: "संतुष्टि", val_regret: "पछतावा", val_continued_craving: "लगातार इच्छा",
+    val_home: "घर", val_work: "कार्यस्थल", val_outside: "बाहर",
+    val_alone: "अकेले", val_with_others: "दूसरों के साथ",
+    val_phone: "फोन",
+    val_rare: "दुर्लभ", val_occasional: "कभी-कभी", val_frequent: "अक्सर",
+    tab_history_export: "निर्यात", tab_history_import: "आयात", tab_history_clear: "सभी मिटाएं",
+    tab_history_search: "खोजें...", val_all: "सभी",
+    toast_saved: "सेव किया गया", toast_updated: "अपडेट किया गया", toast_deleted: "हटाया गया", toast_cancelled: "रद्द किया गया",
+    settings_language: "भाषा", lbl_lang_select: "भाषा चुनें"
+  },
+  ar: {
+    nav_track: "تتبع", nav_history: "السجل", nav_analytics: "تحليلات", nav_guide: "دليل", nav_settings: "إعدادات",
+    lbl_stimulus: "المحفز — ما الذي أثار هذا؟",
+    lbl_thought: "الفكرة — ماذا قال عقلك؟",
+    lbl_urge_intensity: "شدة الرغبة (1-10)",
+    lbl_action: "الإجراء",
+    lbl_awareness: "الوعي — متى لاحظت؟",
+    btn_expand: "+ توسيع كل الحقول",
+    btn_collapse: "− إخفاء الحقول",
+    sec_stimulus: "المحفز", lbl_type: "النوع", lbl_category: "الفئة",
+    sec_thought: "الفكرة", lbl_thought_type: "نوع الفكرة",
+    sec_urge: "الرغبة", lbl_urge_type: "نوع الرغبة", lbl_duration: "المدة",
+    sec_body: "الجسم", lbl_hunger: "الجوع (1-10)", lbl_energy: "الطاقة", lbl_tension: "التوتر", lbl_fatigue: "التعب",
+    sec_emotion: "العاطفة", lbl_emotion: "العاطفة (اكتب)",
+    sec_behavior: "السلوك", lbl_behavior_cat: "فئة السلوك", lbl_behavior_detail: "تفاصيل السلوك", lbl_intensity: "الشدة",
+    sec_response: "الاستجابة", lbl_delay: "التأخير قبل التصرف", lbl_effort: "الجهد للمقاومة",
+    sec_outcome: "النتيجة", lbl_immediate_outcome: "النتيجة الفورية", lbl_post_outcome: "النتيجة اللاحقة (بعد بضع دقائق)",
+    sec_context: "السياق", lbl_location: "الموقع", lbl_social: "اجتماعي", lbl_device: "الجهاز",
+    sec_pattern: "النمط", lbl_repeat_today: "تكرر هذا اليوم؟", lbl_frequency: "كم مرة يحدث هذا؟",
+    sec_reflection: "تأمل", lbl_reflection: "ماذا يمكنك أن تفعل بشكل مختلف في المرة القادمة؟",
+    btn_save: "حفظ", btn_update: "تحديث", btn_cancel: "إلغاء",
+    val_acted: "فعلت", val_delayed: "تأجلت", val_resisted: "قاومت", val_replaced: "استبدلت",
+    val_before: "قبل", val_during: "أثناء", val_after: "بعد",
+    val_internal: "داخلي", val_external: "خارجي",
+    val_physiological: "فسيولوجي", val_emotional: "عاطفي", val_environmental: "بيئي", val_social: "اجتماعي", val_temporal: "زمني",
+    val_impulse: "دافع", val_justification: "تبرير", val_avoidance: "تجنب", val_emotional_reasoning: "منطق عاطفي",
+    val_reward: "مكافأة", val_escape: "هروب", val_relief: "راحة",
+    val_short: "قصير", val_medium: "متوسط", val_long: "طويل",
+    val_low: "منخفض", val_normal: "طبيعي", val_high: "مرتفع", val_extreme: "شديد",
+    val_yes: "نعم", val_no: "لا",
+    val_eating: "أكل", val_scrolling: "تصفح", val_avoidance_beh: "تجنب", val_anger: "غضب", val_social_beh: "اجتماعي", val_substance: "مواد",
+    val_0s: "0 ثانية", val_5s: "5 ثواني", val_30s: "30 ثانية", val_2m_plus: "دقيقتين+",
+    val_none: "لا شيء",
+    val_pleasure: "متعة", val_neutral: "محايد", val_discomfort: "انزعاج",
+    val_satisfaction: "رضا", val_regret: "ندم", val_continued_craving: "رغبة مستمرة",
+    val_home: "المنزل", val_work: "العمل", val_outside: "بالخارج",
+    val_alone: "لوحدي", val_with_others: "مع آخرين",
+    val_phone: "هاتف",
+    val_rare: "نادر", val_occasional: "أحياناً", val_frequent: "كثيراً",
+    tab_history_export: "تصدير", tab_history_import: "استيراد", tab_history_clear: "مسح الكل",
+    tab_history_search: "بحث...", val_all: "الكل",
+    toast_saved: "تم الحفظ", toast_updated: "تم التحديث", toast_deleted: "تم الحذف", toast_cancelled: "تم الإلغاء",
+    settings_language: "اللغة", lbl_lang_select: "اختر اللغة"
+  }
+};
+
+    function t(key) {
+      return translations[currentLang]?.[key] || translations['en'][key] || key;
+    }
+    
+    function updateDOM() {
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+      const search = document.getElementById('historySearch');
+      if (search) search.placeholder = t('tab_history_search');
+    }
+
 
     // ============ STORAGE ============
     const STORAGE_KEY = 'blt_entries_v1';
@@ -1944,7 +2151,7 @@ function doGet(e) {
       document.getElementById('expandedSection').classList.add('hidden');
       document.getElementById('toggleExpand').textContent = '+ Expand all fields';
 
-      toast(currentEditId ? 'Entry updated' : 'Entry saved · #' + entries.length);
+      toast(currentEditId ? t('toast_updated') : t('toast_saved') + ' · #' + entries.length);
       currentEditId = null;
       renderHistory(); // Refresh history tab
     }
@@ -2056,43 +2263,43 @@ function doGet(e) {
           <div class="entry-time">${formatTime(e.timestamp)}</div>
         </div>
         <div class="entry-meta">
-          <span>urge ${e.urge_intensity}/10</span>
-          <span>${esc(e.action_type || '—')}</span>
-          <span>${esc(e.awareness || '—')}</span>
+          <span>${t('sec_urge')} ${e.urge_intensity}/10</span>
+          <span>${esc(e.action_type ? t('val_' + e.action_type) : '—')}</span>
+          <span>${esc(e.awareness ? t('val_' + e.awareness) : '—')}</span>
           <span>${esc(e.time_of_day)}</span>
         </div>
         <div class="entry-detail">
           <dl class="detail-grid">
-            ${detailRow('thought', e.thought)}
-            ${detailRow('emotion', e.emotion)}
-            ${detailRow('stimulus type', e.stimulus_type)}
-            ${detailRow('stimulus category', e.stimulus_category)}
-            ${detailRow('thought type', e.thought_type)}
-            ${detailRow('urge type', e.urge_type)}
-            ${detailRow('urge duration', e.urge_duration)}
-            ${detailRow('hunger', e.hunger)}
-            ${detailRow('energy', e.energy)}
-            ${detailRow('tension', e.tension)}
-            ${detailRow('fatigue', e.fatigue === null ? null : (e.fatigue ? 'yes' : 'no'))}
-            ${detailRow('behavior category', e.behavior_category)}
-            ${detailRow('behavior detail', e.behavior_detail)}
-            ${detailRow('behavior intensity', e.behavior_intensity)}
-            ${detailRow('delay', e.delay)}
-            ${detailRow('effort', e.effort)}
-            ${detailRow('immediate outcome', e.outcome_immediate)}
-            ${detailRow('post outcome', e.outcome_post)}
-            ${detailRow('location', e.location)}
-            ${detailRow('social', e.social)}
-            ${detailRow('device', e.device)}
-            ${detailRow('repeat today', e.repeat_today === null ? null : (e.repeat_today ? 'yes' : 'no'))}
-            ${detailRow('frequency', e.frequency)}
+            ${detailRow(t('sec_thought'), e.thought)}
+            ${detailRow(t('sec_emotion'), e.emotion)}
+            ${detailRow(t('lbl_type'), e.stimulus_type ? t('val_' + e.stimulus_type) : null)}
+            ${detailRow(t('lbl_category'), e.stimulus_category ? t('val_' + e.stimulus_category) : null)}
+            ${detailRow(t('lbl_thought_type'), e.thought_type ? t('val_' + e.thought_type) : null)}
+            ${detailRow(t('lbl_urge_type'), e.urge_type ? t('val_' + e.urge_type) : null)}
+            ${detailRow(t('lbl_duration'), e.urge_duration ? t('val_' + e.urge_duration) : null)}
+            ${detailRow(t('lbl_hunger'), e.hunger)}
+            ${detailRow(t('lbl_energy'), e.energy ? t('val_' + e.energy) : null)}
+            ${detailRow(t('lbl_tension'), e.tension ? t('val_' + e.tension) : null)}
+            ${detailRow(t('lbl_fatigue'), e.fatigue === null ? null : (e.fatigue ? t('val_yes') : t('val_no')))}
+            ${detailRow(t('lbl_behavior_cat'), e.behavior_category ? t('val_' + e.behavior_category) : null)}
+            ${detailRow(t('lbl_behavior_detail'), e.behavior_detail)}
+            ${detailRow(t('lbl_intensity'), e.behavior_intensity ? t('val_' + e.behavior_intensity) : null)}
+            ${detailRow(t('lbl_delay'), e.delay ? t('val_' + e.delay) : null)}
+            ${detailRow(t('lbl_effort'), e.effort ? t('val_' + e.effort) : null)}
+            ${detailRow(t('lbl_immediate_outcome'), e.outcome_immediate ? t('val_' + e.outcome_immediate) : null)}
+            ${detailRow(t('lbl_post_outcome'), e.outcome_post ? t('val_' + e.outcome_post) : null)}
+            ${detailRow(t('lbl_location'), e.location ? t('val_' + e.location) : null)}
+            ${detailRow(t('lbl_social'), e.social ? t('val_' + e.social) : null)}
+            ${detailRow(t('lbl_device'), e.device ? t('val_' + e.device) : null)}
+            ${detailRow(t('lbl_repeat_today'), e.repeat_today === null ? null : (e.repeat_today ? t('val_yes') : t('val_no')))}
+            ${detailRow(t('lbl_frequency'), e.frequency ? t('val_' + e.frequency) : null)}
           </dl>
           <div class="reflection-block">
-            <div class="reflection-label">What could you do differently next time?</div>
+            <div class="reflection-label">${t('lbl_reflection')}</div>
             <div class="reflection-text ${e.alternative ? '' : 'empty'}" data-ref-id="${e.id}">${e.alternative ? esc(e.alternative) : 'Not added yet — tap to add'}</div>
           </div>
           <div style="display:flex; gap: 8px;">
-            <button class="delete-btn" data-edit="${e.id}" style="flex:1;">Edit entry</button>
+            <button class="delete-btn" data-edit="${e.id}" style="flex:1;">${t('btn_update')}</button>
             <button class="delete-btn" data-del="${e.id}" style="flex:1;">Delete entry</button>
           </div>
         </div>
@@ -2120,7 +2327,7 @@ function doGet(e) {
           const all = loadEntries().filter(e => e.id !== id);
           persist(all);
           renderHistory();
-          toast('Entry deleted');
+          toast(t('toast_deleted'));
         });
       });
 
@@ -2291,7 +2498,7 @@ function doGet(e) {
         const pct = Math.round((c / total) * 100);
         return `
       <div class="dist-row">
-        <span class="lbl">${esc(k)}</span>
+        <span class="lbl">${esc(t('val_' + k))}</span>
         <span class="num">${c} · ${pct}%</span>
       </div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
@@ -2509,6 +2716,20 @@ function doGet(e) {
 
     // ============ INIT ============
     document.addEventListener('DOMContentLoaded', () => {
+      // i18n
+      const ls = document.getElementById('langSelect');
+      if (ls) {
+        ls.value = currentLang;
+        ls.addEventListener('change', (e) => {
+          currentLang = e.target.value;
+          localStorage.setItem('blt_lang', currentLang);
+          updateDOM();
+          renderHistory();
+          renderAnalytics();
+        });
+      }
+      updateDOM();
+
       setupChoiceGroups();
 
       document.getElementById('f_urge_intensity').addEventListener('input', (e) => {
@@ -2533,7 +2754,7 @@ function doGet(e) {
       if (cancelBtn) {
         cancelBtn.addEventListener('click', () => {
           clearForm();
-          toast('Edit cancelled');
+          toast(t('toast_cancelled'));
         });
       }
 
